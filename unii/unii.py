@@ -110,8 +110,10 @@ class UNiiLocal(UNii):
         )
         # response, _ = await self._get_received_message(tx_sequence)
         if response == UNiiCommand.CONNECTION_REQUEST_RESPONSE:
-            self._forward_to_event_occurred_callbacks(response, None)
+            self.connected = True
             self._stay_connected = True
+
+            self._forward_to_event_occurred_callbacks(response, None)
 
             await self._send_receive(
                 UNiiCommand.REQUEST_EQUIPMENT_INFORMATION, None, False
@@ -162,8 +164,6 @@ class UNiiLocal(UNii):
 
             await self._send_receive(UNiiCommand.REQUEST_INPUT_STATUS, None, False)
             await self._send_receive(UNiiCommand.REQUEST_DEVICE_STATUS, None, False)
-
-            self.connected = True
 
             return True
         return False
