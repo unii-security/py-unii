@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
         To keep the connection alive (and NAT entries active) a poll message has to be sent every
         30 seconds if no other messages where sent during the last 30 seconds.
 
-        The UNii Manager takes care of sending this poll message and should keep the connection
+        The UNii takes care of sending this poll message and should keep the connection
         alive.
         """
         await asyncio.sleep(1)
