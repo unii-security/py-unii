@@ -1,0 +1,6 @@
+{
+	"host": "",
+	"unencrypted_port": 6502,
+	"encrypted_port": 6503,
+	"shared_key": ""
+}
