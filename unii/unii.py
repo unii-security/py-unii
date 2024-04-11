@@ -108,13 +108,7 @@ class UNiiLocal(UNii):
         response, _ = await self._send_receive(
             UNiiCommand.CONNECTION_REQUEST, None, False
         )
-        # response, _ = await self._get_received_message(tx_sequence)
         if response == UNiiCommand.CONNECTION_REQUEST_RESPONSE:
-            self.connected = True
-            self._stay_connected = True
-
-            self._forward_to_event_occurred_callbacks(response, None)
-
             await self._send_receive(
                 UNiiCommand.REQUEST_EQUIPMENT_INFORMATION, None, False
             )
@@ -164,6 +158,13 @@ class UNiiLocal(UNii):
 
             await self._send_receive(UNiiCommand.REQUEST_INPUT_STATUS, None, False)
             await self._send_receive(UNiiCommand.REQUEST_DEVICE_STATUS, None, False)
+
+            self.connected = True
+            self._stay_connected = True
+
+            self._forward_to_event_occurred_callbacks(
+                UNiiCommand.CONNECTION_REQUEST_RESPONSE, None
+            )
 
             return True
         return False
@@ -248,7 +249,8 @@ class UNiiLocal(UNii):
         match command:
             case UNiiCommand.EVENT_OCCURRED:
                 self._forward_to_event_occurred_callbacks(command, data)
-                await self._send(UNiiCommand.RESPONSE_EVENT_OCCURRED, None, False)
+                if self.connected:
+                    await self._send(UNiiCommand.RESPONSE_EVENT_OCCURRED, None, False)
             case UNiiCommand.INPUT_STATUS_CHANGED:
                 self._handle_input_status_changed(data)
                 # self.inputs = data
