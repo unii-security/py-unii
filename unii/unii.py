@@ -109,58 +109,116 @@ class UNiiLocal(UNii):
 
         self.connection.set_message_received_callback(self._message_received_callback)
         response, _ = await self._send_receive(
-            UNiiCommand.CONNECTION_REQUEST, None, UNiiCommand.CONNECTION_REQUEST_RESPONSE, False
+            UNiiCommand.CONNECTION_REQUEST,
+            None,
+            UNiiCommand.CONNECTION_REQUEST_RESPONSE,
+            False,
         )
         if response == UNiiCommand.CONNECTION_REQUEST_RESPONSE:
             await self._send_receive(
-                UNiiCommand.REQUEST_EQUIPMENT_INFORMATION, None, UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION, False
+                UNiiCommand.REQUEST_EQUIPMENT_INFORMATION,
+                None,
+                UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION,
+                False,
             )
 
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x01"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x01"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x02"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x02"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x03"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x03"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x04"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x04"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x05"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x05"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x06"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x06"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x07"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x07"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x08"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x08"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x09"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x09"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x0a"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x0a"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x0b"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x0b"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x0c"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x0c"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x0d"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x0d"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
             await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT, UNiiRawData(b"\x00\x0e"), UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT, False
+                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                UNiiRawData(b"\x00\x0e"),
+                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                False,
             )
 
-            await self._send_receive(UNiiCommand.REQUEST_INPUT_STATUS, None, UNiiCommand.INPUT_STATUS_CHANGED, False)
-            await self._send_receive(UNiiCommand.REQUEST_DEVICE_STATUS, None, UNiiCommand.DEVICE_STATUS_CHANGED, False)
+            await self._send_receive(
+                UNiiCommand.REQUEST_INPUT_STATUS,
+                None,
+                UNiiCommand.INPUT_STATUS_CHANGED,
+                False,
+            )
+            await self._send_receive(
+                UNiiCommand.REQUEST_DEVICE_STATUS,
+                None,
+                UNiiCommand.DEVICE_STATUS_CHANGED,
+                False,
+            )
 
             self.connected = True
             self._stay_connected = True
@@ -225,7 +283,11 @@ class UNiiLocal(UNii):
         return await self.connection.send(command, data)
 
     async def _send_receive(
-        self, command: UNiiCommand, data: UNiiData = None, expected_response: UNiiCommand = None, reconnect: bool = True
+        self,
+        command: UNiiCommand,
+        data: UNiiData = None,
+        expected_response: UNiiCommand = None,
+        reconnect: bool = True,
     ) -> [UNiiCommand, UNiiData]:
         tx_sequence = await self._send(command, data, reconnect)
         if tx_sequence is not None:
@@ -264,13 +326,17 @@ class UNiiLocal(UNii):
             case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
                 self.equipment_information = data
 
-        if tx_sequence in self._waiting_for_message and self._waiting_for_message[tx_sequence] in [None, command]:
+        if tx_sequence in self._waiting_for_message and self._waiting_for_message[
+            tx_sequence
+        ] in [None, command]:
             with self._received_message_queue_lock:
                 self._received_message_queue[tx_sequence] = [command, data]
 
         self._forward_to_event_occurred_callbacks(command, data)
 
-    async def _get_received_message(self, tx_sequence: int, expected_response: UNiiCommand = None) -> [UNiiCommand, UNiiData]:
+    async def _get_received_message(
+        self, tx_sequence: int, expected_response: UNiiCommand = None
+    ) -> [UNiiCommand, UNiiData]:
         timeout = time.time() + 5
         self._waiting_for_message[tx_sequence] = expected_response
         while self.connection.is_open and time.time() < timeout:
@@ -286,7 +352,12 @@ class UNiiLocal(UNii):
 
     async def _poll_alive(self) -> bool:
         try:
-            response, _ = await self._send_receive(UNiiCommand.POLL_ALIVE_REQUEST, None, UNiiCommand.POLL_ALIVE_RESPONSE, False)
+            response, _ = await self._send_receive(
+                UNiiCommand.POLL_ALIVE_REQUEST,
+                None,
+                UNiiCommand.POLL_ALIVE_RESPONSE,
+                False,
+            )
             # tx_sequence = await self._send(UNiiCommand.POLL_ALIVE_REQUEST)
             # response, _ = await self._get_received_message(tx_sequence, UNiiCommand.POLL_ALIVE_RESPONSE)
             # logger.debug("Response received: %s", response)
