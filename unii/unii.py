@@ -217,7 +217,7 @@ class UNiiLocal(UNii):
             # ToDo: Throw exception?
             return None
 
-        logger.debug("Sending command %s", command)
+        # logger.debug("Sending command %s", command)
         return await self.connection.send(command, data)
 
     async def _send_receive(
@@ -307,4 +307,4 @@ class UNiiLocal(UNii):
                 if self.connection.is_open:
                     await self._disconnect()
             await asyncio.sleep(1)
-        logger.debug("Poll Alive coroutine stopped")
+        # logger.debug("Poll Alive coroutine stopped")

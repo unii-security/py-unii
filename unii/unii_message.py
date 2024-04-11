@@ -237,8 +237,8 @@ class UNiiRequestMessage(_UNiiMessage):
             payload.append(0x00)
 
         if shared_key is not None:
-            logger.debug("Payload: 0x%s", payload.hex())
-            logger.debug("Shared Key: 0x%s", shared_key.hex())
+            # logger.debug("Payload: 0x%s", payload.hex())
+            # logger.debug("Shared Key: 0x%s", shared_key.hex())
             shared_key = bytearray(shared_key)
             if len(shared_key) > 16:
                 shared_key = shared_key[:16]
@@ -251,13 +251,13 @@ class UNiiRequestMessage(_UNiiMessage):
             initial_value = header[:12]
             # The block counter is reset to 0 for every new message.
             initial_value += b"\00\00\00\00"
-            logger.debug("Initial value: 0x%s", initial_value.hex())
+            # logger.debug("Initial value: 0x%s", initial_value.hex())
 
             aes = AES.new(
                 shared_key, AES.MODE_CTR, initial_value=initial_value, nonce=b""
             )
             payload = aes.encrypt(payload)
-            logger.debug("Encrypted Payload: 0x%s", payload.hex())
+            # logger.debug("Encrypted Payload: 0x%s", payload.hex())
 
         message = header + payload
 
@@ -347,7 +347,7 @@ class UNiiResponseMessage(_UNiiMessage):
         data = None
         if data_length > 0:
             data = payload[4 : 4 + data_length]
-            logger.debug("%s data: %i bytes, 0x%s", self.command, len(data), data.hex())
+            # logger.debug("%s data: %i bytes, 0x%s", self.command, len(data), data.hex())
             match self.command:
                 case UNiiCommand.GENERAL_RESPONSE:
                     data = UNiiResultCode(data)

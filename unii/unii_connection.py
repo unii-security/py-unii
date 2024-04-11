@@ -198,6 +198,7 @@ class UNiiTCPConnection(UNiiConnection):
                 # Read remaining part of the message
                 if len(response) < packet_length:
                     response += await self._reader.read(packet_length - len(response))
+                #logger.debug("Received: 0x%s", response.hex())
 
                 message = UNiiResponseMessage(response, self._shared_key)
                 logger.debug("Received: %s", message)
@@ -228,7 +229,7 @@ class UNiiTCPConnection(UNiiConnection):
             except IndexError as ex:
                 logger.error(ex)
             await asyncio.sleep(0.1)
-        logger.debug("Receive coroutine stopped")
+        # logger.debug("Receive coroutine stopped")
 
     async def send(
         self,
@@ -247,8 +248,8 @@ class UNiiTCPConnection(UNiiConnection):
             message.rx_sequence = self._rx_sequence
             message.command = command
             message.data = data
-            logger.debug("Sending: %s", message)
-            logger.debug("Sending: 0x%s", message.to_bytes(self._shared_key).hex())
+            # logger.debug("Sending: %s", message)
+            # logger.debug("Sending: 0x%s", message.to_bytes(self._shared_key).hex())
             try:
                 with self._writer_lock:
                     self._writer.write(message.to_bytes(self._shared_key))
