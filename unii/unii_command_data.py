@@ -142,7 +142,7 @@ class UNiiEventRecord(UNiiData):
         if device_id > 0:
             self.device_id = device_id
 
-        device_name_length = data[3]
+        device_name_length = data[2]
         if device_name_length > 0:
             device_name = data[3 : 3 + device_name_length]
             self.device_name = device_name.decode("ascii")
