@@ -198,10 +198,18 @@ class UNiiTCPConnection(UNiiConnection):
                 # Read remaining part of the message
                 if len(response) < packet_length:
                     response += await self._reader.read(packet_length - len(response))
-                #logger.debug("Received: 0x%s", response.hex())
 
                 message = UNiiResponseMessage(response, self._shared_key)
-                logger.debug("Received: %s", message)
+                if message.command not in [
+                    # UNiiCommand.CONNECTION_REQUEST_RESPONSE,
+                    # UNiiCommand.POLL_ALIVE_RESPONSE,
+                    UNiiCommand.INPUT_STATUS_CHANGED,
+                    UNiiCommand.DEVICE_STATUS_CHANGED,
+                    UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                    UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION,
+                ]:
+                    logger.debug("Received: 0x%s", response.hex())
+                    logger.debug("Received: %s", message)
                 self.last_message_received = datetime.now()
                 # logger.debug("Last message received: %s", self.last_message_sent)
                 if message.rx_sequence != self._tx_sequence:
