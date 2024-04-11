@@ -25,6 +25,7 @@ class Test(unittest.TestCase):
 
     _host = None
     _port: int = 6502
+    _shared_key = None
 
     def setUp(self):
         # logging.basicConfig(
@@ -33,7 +34,8 @@ class Test(unittest.TestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             self._host = settings.get("host")
-            self._port = settings.get("unencrypted_port", self._port)
+            self._port = settings.get("encrypted_port", self._port)
+            self._shared_key = settings.get("shared_key")
 
     def tearDown(self):
         pass
@@ -50,7 +52,7 @@ class Test(unittest.TestCase):
         alive.
         """
         await asyncio.sleep(1)
-        unii = UNiiLocal(self._host, self._port)
+        unii = UNiiLocal(self._host, self._port, self._shared_key)
         try:
             await unii.connect()
             self.assertTrue(unii.connection.is_open, "Connection is not open")
