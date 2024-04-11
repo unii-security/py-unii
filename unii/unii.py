@@ -67,7 +67,7 @@ class UNii(ABC):
 
     def add_event_occurred_callback(self, callback):
         """
-        Adds an Event Occured Callback to the UNii.
+        Adds an Event Occurred Callback to the UNii.
         """
         self._event_occurred_callbacks.append(callback)
 
