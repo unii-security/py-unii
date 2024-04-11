@@ -102,53 +102,62 @@ class UNiiEventRecord(UNiiData):
         second = data[9]
         self.timestamp = datetime(year, month, day, hour, minute, second)
 
+        data = data[10:]
+
         # Description
-        event_description_length = data[10]
+        event_description_length = data[0]
         if event_description_length > 0:
-            event_description = data[11 : 11 + event_description_length]
+            event_description = data[1 : 1 + event_description_length]
             self.event_description = event_description.decode("ascii")
-            offset += event_description_length
+
+        data = data[1 + event_description_length :]
 
         # User
-        user_id = int.from_bytes(data[11 + offset : 13 + offset])
+        user_id = int.from_bytes(data[0:2])
         if user_id > 0:
             self.user_id = user_id
-        user_name_length = data[13 + offset]
+
+        user_name_length = data[2]
         if user_name_length > 0:
-            user_name = data[14 + offset : 14 + offset + user_name_length]
+            user_name = data[3 : 3 + user_name_length]
             self.user_name = user_name.decode("ascii")
-            offset += user_name_length
+
+        data = data[3 + user_name_length :]
 
         # Input
-        input_id = int.from_bytes(data[14 + offset : 16 + offset])
+        input_id = int.from_bytes(data[0:2])
         if input_id > 0:
             self.input_id = input_id
 
-        input_name_length = data[16 + offset]
+        input_name_length = data[2]
         if input_name_length > 0:
-            input_name = data[16 + offset : 16 + offset + input_name_length]
+            input_name = data[3 : 3 + input_name_length]
             self.input_name = input_name.decode("ascii")
             offset += input_name_length
 
+        data = data[3 + input_name_length :]
+
         # Device
-        device_id = int.from_bytes(data[17 + offset : 19 + offset])
+        device_id = int.from_bytes(data[0:2])
         if device_id > 0:
             self.device_id = device_id
 
-        device_name_length = data[19 + offset]
+        device_name_length = data[3]
         if device_name_length > 0:
-            device_name = data[20 + offset : 20 + offset + device_name_length]
+            device_name = data[3 : 3 + device_name_length]
             self.device_name = device_name.decode("ascii")
             offset += device_name_length
 
+        data = data[3 + device_name_length :]
+
         # Bus
-        self.bus_id = data[20 + offset]
+        self.bus_id = data[0]
 
         # Section
-        self.section = int.from_bytes(data[21 + offset : 25 + offset])
+        self.section = int.from_bytes(data[1:5])
 
         # SIA Code
-        self.sia_code = int.from_bytes(data[22 + offset : 24 + offset])
+        self.sia_code = data[5:7].decode("ascii")
 
     def __str__(self) -> str:
         return self.event_description

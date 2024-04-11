@@ -59,6 +59,20 @@ class Test(unittest.TestCase):
             bytes.fromhex("f109441a389608be2c530402001400020000853d"),
         )
 
+    def test_unencrypted_event_occured(self):
+        message = UNiiResponseMessage(
+            bytes.fromhex(
+                "b11177c121e200007ca20402004501020031000381b17c030b021d1116436f6e66696775726174696520676577696a7a696764000000000000000000000000000020204a12"
+            )
+        )
+        self.assertEqual(message.session_id, 0xB111)
+        self.assertEqual(message.tx_sequence, 0x77C121E2)
+        self.assertEqual(message.rx_sequence, 0x00007CA2)
+        self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
+        self.assertIsNotNone(message.data)
+        self.assertEqual(message.data.event_description, "Configuratie gewijzigd")
+        self.assertEqual(message.data.sia_code, "  ")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
