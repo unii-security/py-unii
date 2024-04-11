@@ -454,22 +454,47 @@ class UNiiEquipmentInformation(UNiiData):
         """ """
         # Version
         version = data[1]
-        if version != 2:
-            raise TypeError()
+        if version == 2:
+            self.software_version = data[2:7].decode("ascii")
+            software_date = data[7:19].decode("ascii").strip(string.whitespace + "\x00")
+            self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
+            device_name_length = data[19]
+            self.device_name = (
+                data[20 : 20 + device_name_length]
+                .decode("ascii")
+                .strip(string.whitespace + "\x00")
+            )
+            self.max_inputs = data[-5]
+            self.max_groups = data[-4]
+            self.max_sections = data[-3]
+            self.max_users = int.from_bytes(data[-2:])
 
-        self.software_version = data[2:7].decode("ascii")
-        software_date = data[7:19].decode("ascii").strip(string.whitespace + "\x00")
-        self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
-        device_name_length = data[19]
-        self.device_name = (
-            data[20 : 20 + device_name_length]
-            .decode("ascii")
-            .strip(string.whitespace + "\x00")
-        )
-        self.max_inputs = data[-5]
-        self.max_groups = data[-4]
-        self.max_sections = data[-3]
-        self.max_users = int.from_bytes(data[-2:])
+        elif version == 3:
+            index = 2
+            self.software_version = data[index:19].decode("ascii")
+            index=+17
+            device_name_length = data[index]
+            index+=1
+            self.device_name = (
+                data[index : index + device_name_length]
+                .decode("ascii")
+                .strip(string.whitespace + "\x00")
+            )
+            index+=device_name_length
+            self.max_inputs = data[index]
+            index+=1
+            self.max_groups = data[index]
+            index+=1
+            self.max_sections = data[index]
+            index+=1
+            self.max_users = int.from_bytes(data[index:index+2])
+            index+=2
+            device_id_length = data[index]
+            index+=1
+            self.device_id = int.from_bytes(data[index:index+device_id_length])
+
+        else:
+            raise TypeError()
 
     def __str__(self) -> str:
         return str(
