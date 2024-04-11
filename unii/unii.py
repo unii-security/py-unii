@@ -75,7 +75,10 @@ class UNii(ABC):
         self, command: UNiiCommand, data: UNiiData
     ):
         for callback in self._event_occurred_callbacks:
-            callback(command, data)
+            try:
+                callback(command, data)
+            except Exception as ex:
+                logger.error(ex)
 
 
 class UNiiLocal(UNii):
