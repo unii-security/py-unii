@@ -160,7 +160,22 @@ class UNiiEventRecord(UNiiData):
         self.sia_code = data[5:7].decode("ascii")
 
     def __str__(self) -> str:
-        return self.event_description
+        return str(
+            {
+                "event_number": self.event_number,
+                "timestamp": self.timestamp,
+                "event_description": self.event_description,
+                "user_id": self.user_id,
+                "user_name": self.user_name,
+                "input_id": self.input_id,
+                "input_name": self.input_name,
+                "device_id": self.device_id,
+                "device_name": self.device_name,
+                "bus_id": self.bus_id,
+                "section": self.section,
+                "sia_code": self.sia_code,
+            }
+        )
 
 
 class UNiiInputState(IntEnum):
