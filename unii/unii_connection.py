@@ -210,6 +210,10 @@ class UNiiTCPConnection(UNiiConnection):
                 ]:
                     logger.debug("Received: 0x%s", response.hex())
                     logger.debug("Received: %s", message)
+                else:
+                    logger.debug(
+                        "Received: %i, %s", message.rx_sequence, message.command
+                    )
                 self.last_message_received = datetime.now()
                 # logger.debug("Last message received: %s", self.last_message_sent)
                 if message.rx_sequence != self._tx_sequence:
