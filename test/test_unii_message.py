@@ -6,6 +6,7 @@ Test creating UNii messages.
 import logging
 import unittest
 
+from unii.sia_code import SIACode
 from unii.unii_command import UNiiCommand
 from unii.unii_message import UNiiChecksumError, UNiiRequestMessage, UNiiResponseMessage
 
@@ -62,6 +63,7 @@ class Test(unittest.TestCase):
         )
 
     def test_unencrypted_event_occurred(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "b11177c121e200007ca20402004501020031000381b17c030b021d1116436f6e66696775726174696520676577696a7a696764000000000000000000000000000020204a12"
@@ -73,9 +75,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Configuratie gewijzigd")
-        self.assertEqual(message.data.sia_code, "  ")
+        self.assertIsNone(message.data.sia_code)
 
     def test_encrypted_event_occurred_1(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "22f816f54ec00000d64405020043bff2b8de0eda43d9ce70ca2ee5db0e5822f33b013682af245fb4d693d4620906bb681a26cde01779ad351de49b7ee0afa0e91492e6"
@@ -89,9 +92,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Brand Alarm")
-        self.assertEqual(message.data.sia_code, "FA")
+        self.assertEqual(message.data.sia_code, SIACode.FIRE_ALARM)
 
     def test_encrypted_event_occurred_2(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "22f816f54ec00000d64405020043bff2b8de0eda43d9ce70ca2ee5db0e5822f33b013682af245fb4d693d4620906bb681a26cde01779ad351de49b7ee0afa0e91492e6"
@@ -105,9 +109,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Brand Alarm")
-        self.assertEqual(message.data.sia_code, "FA")
+        self.assertEqual(message.data.sia_code, SIACode.FIRE_ALARM)
 
     def test_encrypted_event_occurred_3(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "ed6c37c13cfb0000a9c905020055ed4b1fa1b14709845e8895825e64005d3cc502c5a54c7f16ae04e7525ca1c3e895ce2b8d5e1125d818cade5d5f778b0cd22c7476d510c3194644b76d79e6fd8d9be76a73302236"
@@ -123,9 +128,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data.event_description, "Sabotage schakelaar alarm")
         self.assertEqual(message.data.device_id, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
-        self.assertEqual(message.data.sia_code, "TA")
+        self.assertEqual(message.data.sia_code, SIACode.TAMPER)
 
     def test_encrypted_event_occurred_4(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "bdc57b6ed1f9000038740502005e023995b766cc5cbcaf338306bc9adeedba83f1e4f04d720941ad52ef4b45fda57abd2115bd09018bd78b637a9ac55d7a985b69ffecbc334dac4b0e317c0503a7abe2cd85b789c8d85b0806e33f169c7a"
@@ -141,9 +147,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data.event_description, "Sabotage schakelaar herstel")
         self.assertEqual(message.data.device_id, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
-        self.assertEqual(message.data.sia_code, "TR")
+        self.assertEqual(message.data.sia_code, SIACode.TAMPER_RESTORAL)
 
     def test_encrypted_event_occurred_5(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "ed6c37c13cfb0000a9ca0502004d9350e2cae2ee6eb18dd9ae3aca0f3f073189fb6c1c0df68b7aada71d33985b3cd788853a02e9248ab2b0cb25fc1c6a59e40a1f99e2390ef6ac2f3a5e792e5b"
@@ -159,9 +166,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data.event_description, "Communicatie fout")
         self.assertEqual(message.data.device_id, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
-        self.assertEqual(message.data.sia_code, "TA")
+        self.assertEqual(message.data.sia_code, SIACode.TAMPER)
 
     def test_encrypted_event_occurred_6(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "bdc57b6ed1f900003873050200575df1479ce5177f839875bacdee013675d70e1a9ddc9b116e81d3f0986fdfbd8feb3b98fd198df3fb9b013d2a69295dbba95d2eaaa2c80dc07e776e6be73abd28c0ac765be39b498ffd"
@@ -177,9 +185,10 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data.event_description, "Communicatie herstel")
         self.assertEqual(message.data.device_id, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
-        self.assertEqual(message.data.sia_code, "TR")
+        self.assertEqual(message.data.sia_code, SIACode.TAMPER_RESTORAL)
 
     def test_encrypted_event_occurred_7(self):
+        # pylint: disable=line-too-long
         message = UNiiResponseMessage(
             bytes.fromhex(
                 "bdc57b6ed1f90000386b05020057c70b74b84c85b840568667e0054f03feeda2eff0eff4f1a57f98b9c3957896c855a6ab068755f675dcf0079c4b68633819cc67223099a1b54e652e7d5a7d1fa93a5628520d2dc54e0d"
@@ -195,7 +204,7 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data.event_description, "Config gewijzigd op afstand")
         self.assertEqual(message.data.device_id, 5000)
         self.assertEqual(message.data.device_name, "UNii centrale")
-        self.assertEqual(message.data.sia_code, "RS")
+        self.assertEqual(message.data.sia_code, SIACode.REMOTE_PROGRAM_SUCCESS)
 
 
 if __name__ == "__main__":

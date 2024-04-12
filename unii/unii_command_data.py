@@ -9,6 +9,8 @@ from datetime import datetime
 from enum import IntEnum, IntFlag, auto
 from typing import Final
 
+from .sia_code import SIACode
+
 logger = logging.getLogger(__name__)
 
 
@@ -77,7 +79,7 @@ class UNiiEventRecord(UNiiData):
     device_name: str = None
     bus_id: int = None
     section: int = None
-    sia_code: int = None
+    sia_code: SIACode = None
 
     def __init__(self, data: bytes):
         # pylint: disable=consider-using-min-builtin
@@ -157,7 +159,9 @@ class UNiiEventRecord(UNiiData):
         self.section = int.from_bytes(data[1:5])
 
         # SIA Code
-        self.sia_code = data[5:7].decode("ascii")
+        sia_code = data[5:7].decode("ascii").strip()
+        if sia_code != "":
+            self.sia_code = SIACode(data[5:7].decode("ascii"))
 
     def __str__(self) -> str:
         return str(
