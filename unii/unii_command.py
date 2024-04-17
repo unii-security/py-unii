@@ -11,7 +11,7 @@ class UNiiCommand(IntEnum):
     UNii Commands
     """
 
-    # Real commands as used by the UNii
+    # Connection setup
     CONNECTION_REQUEST: Final = 0x0001
     CONNECTION_REQUEST_RESPONSE: Final = 0x0002
     CONNECTION_REQUEST_DENIED: Final = 0x0003
