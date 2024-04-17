@@ -358,8 +358,6 @@ class UNiiLocal(UNii):
                 UNiiCommand.POLL_ALIVE_RESPONSE,
                 False,
             )
-            # tx_sequence = await self._send(UNiiCommand.POLL_ALIVE_REQUEST)
-            # response, _ = await self._get_received_message(tx_sequence, UNiiCommand.POLL_ALIVE_RESPONSE)
             # logger.debug("Response received: %s", response)
             if response == UNiiCommand.POLL_ALIVE_RESPONSE:
                 # logger.debug("Poll Alive success")
