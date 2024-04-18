@@ -97,9 +97,9 @@ class UNiiLocal(UNii):
     def __init__(
         self, host: str, port: int = DEFAULT_PORT, shared_key: (str, bytes) = None
     ):
-        # If the shared key is provided as string convert it to bytes.
+        # If the shared key is provided as hex string convert it to bytes.
         if shared_key is not None and isinstance(shared_key, str):
-            shared_key = shared_key.encode()
+            shared_key = bytes.fromhex(shared_key)
         self.connection = UNiiTCPConnection(host, port, shared_key)
         self.unique_id = f"{host}:{port}"
         self._received_message_queue_lock = Lock()

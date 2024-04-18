@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
             settings = json.load(settings_file)
             self._host = settings.get("host")
             self._port = settings.get("encrypted_port", self._port)
-            self._shared_key = settings.get("shared_key").encode()
+            self._shared_key = bytes.fromhex(settings.get("shared_key"))
 
     def tearDown(self):
         pass

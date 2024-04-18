@@ -83,7 +83,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "22f816f54ec00000d64405020043bff2b8de0eda43d9ce70ca2ee5db0e5822f33b013682af245fb4d693d4620906bb681a26cde01779ad351de49b7ee0afa0e91492e6"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0x22F8)
@@ -100,7 +100,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "22f816f54ec00000d64405020043bff2b8de0eda43d9ce70ca2ee5db0e5822f33b013682af245fb4d693d4620906bb681a26cde01779ad351de49b7ee0afa0e91492e6"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0x22F8)
@@ -117,7 +117,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "ed6c37c13cfb0000a9c905020055ed4b1fa1b14709845e8895825e64005d3cc502c5a54c7f16ae04e7525ca1c3e895ce2b8d5e1125d818cade5d5f778b0cd22c7476d510c3194644b76d79e6fd8d9be76a73302236"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0xED6C)
@@ -136,7 +136,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "bdc57b6ed1f9000038740502005e023995b766cc5cbcaf338306bc9adeedba83f1e4f04d720941ad52ef4b45fda57abd2115bd09018bd78b637a9ac55d7a985b69ffecbc334dac4b0e317c0503a7abe2cd85b789c8d85b0806e33f169c7a"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0xBDC5)
@@ -155,7 +155,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "ed6c37c13cfb0000a9ca0502004d9350e2cae2ee6eb18dd9ae3aca0f3f073189fb6c1c0df68b7aada71d33985b3cd788853a02e9248ab2b0cb25fc1c6a59e40a1f99e2390ef6ac2f3a5e792e5b"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0xED6C)
@@ -174,7 +174,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "bdc57b6ed1f900003873050200575df1479ce5177f839875bacdee013675d70e1a9ddc9b116e81d3f0986fdfbd8feb3b98fd198df3fb9b013d2a69295dbba95d2eaaa2c80dc07e776e6be73abd28c0ac765be39b498ffd"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0xBDC5)
@@ -193,7 +193,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "bdc57b6ed1f90000386b05020057c70b74b84c85b840568667e0054f03feeda2eff0eff4f1a57f98b9c3957896c855a6ab068755f675dcf0079c4b68633819cc67223099a1b54e652e7d5a7d1fa93a5628520d2dc54e0d"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         _LOGGER.debug(message)
         self.assertEqual(message.session_id, 0xBDC5)

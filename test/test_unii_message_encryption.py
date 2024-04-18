@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
         message.rx_sequence = 0x00000000
         message.command = UNiiCommand.CONNECTION_REQUEST
         self.assertEqual(
-            message.to_bytes(b"1234567890abcdef").hex(),
+            message.to_bytes(bytes.fromhex("31323334353637383930616263646566")).hex(),
             "ffff84ac0b7a000000000501002093458e6de62e1d5ea0e5281d5261f1845303",
         )
 
@@ -42,7 +42,7 @@ class Test(unittest.TestCase):
             bytes.fromhex(
                 "ffff84ac0b7a000000000501002093458e6de62e1d5ea0e5281d5261f1845303"
             ),
-            b"1234567890abcdef",
+            bytes.fromhex("31323334353637383930616263646566"),
         )
         self.assertEqual(message.session_id, 0xFFFF)
         self.assertEqual(message.tx_sequence, 0x84AC0B7A)

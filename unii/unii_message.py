@@ -239,13 +239,6 @@ class UNiiRequestMessage(_UNiiMessage):
         if shared_key is not None:
             # logger.debug("Payload: 0x%s", payload.hex())
             # logger.debug("Shared Key: 0x%s", shared_key.hex())
-            shared_key = bytearray(shared_key)
-            if len(shared_key) > 16:
-                shared_key = shared_key[:16]
-
-            # If the input is shorter than 16 bytes it's padded with spaces (0x20).
-            while len(shared_key) < 16:
-                shared_key.append(0x20)
 
             # As Initialization Vector for the encryption the first 12 bytes of the header are used.
             initial_value = header[:12]
