@@ -291,12 +291,12 @@ class UNiiDeviceStatus(UNiiData):
 
     def __init__(self, data: bytes):
         # Version
-        # version = data[1]
-        # if version != 2:
-        #     raise ValueError()
+        version = data[1]
+        if version != 2:
+            raise ValueError()
 
         # Split data in chunks of 2 bytes
-        chunks = [data[pos : pos + 2] for pos in range(0, len(data), 2)]
+        chunks = [data[pos : pos + 2] for pos in range(2, len(data), 2)]
         # Convert chunks to list of Device Status Records
         device_status_records = [
             UNiiDeviceStatusRecord.from_bytes(chunk) for chunk in chunks
@@ -321,7 +321,7 @@ class UNiiDeviceStatus(UNiiData):
         self.uwi_devices = device_status_records[49:51]
 
         # Redundant Device
-        self.redundant_device = device_status_records[51]
+        # self.redundant_device = device_status_records[51]
 
     def __str__(self) -> str:
         return str(
@@ -411,7 +411,9 @@ class UNiiInputArrangement(dict, UNiiData):
     def __init__(self, data: bytes):
         """ """
         # Version
-        # version = data[1]
+        version = data[1]
+        if version != 2:
+            raise ValueError()
 
         # Block Number
         block_number = int.from_bytes(data[2:4])
