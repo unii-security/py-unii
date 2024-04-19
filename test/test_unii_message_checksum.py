@@ -17,11 +17,6 @@ class Test(unittest.TestCase):
     Test UNii message checksum correctness.
     """
 
-    # def setUp(self):
-    #     logging.basicConfig(
-    #         format="%(asctime)s %(levelname)-8s %(message)s", level=logging.DEBUG
-    #     )
-
     def test_checksum_1(self):
         """
         Tests the correct working of the checksum algorythm.

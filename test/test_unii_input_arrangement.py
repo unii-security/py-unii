@@ -43,8 +43,6 @@ class Test(unittest.TestCase):
         try:
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
-            # while self._unii.device_status is None:
-            #     await asyncio.sleep(0.1)
             self.assertIsNotNone(self._unii.inputs, "Input Status not set")
         finally:
             await asyncio.sleep(1)

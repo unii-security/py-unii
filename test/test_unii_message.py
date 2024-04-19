@@ -18,11 +18,6 @@ class Test(unittest.TestCase):
     Test UNii message.
     """
 
-    # def setUp(self):
-    #     logging.basicConfig(
-    #         format="%(asctime)s %(levelname)-8s %(message)s", level=logging.DEBUG
-    #     )
-
     def test_unencrypted_connection_request(self):
         """
         Creates an unencrypted connection request message and validates it's correctness.
