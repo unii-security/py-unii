@@ -85,8 +85,6 @@ class UNiiEventRecord(UNiiData):
         # pylint: disable=consider-using-min-builtin
         # pylint: disable=too-many-locals
         """ """
-        offset = 0
-
         # Version
         version = data[1]
         if version != 3:
@@ -135,7 +133,6 @@ class UNiiEventRecord(UNiiData):
         if input_name_length > 0:
             input_name = data[3 : 3 + input_name_length]
             self.input_name = input_name.decode("ascii")
-            offset += input_name_length
 
         data = data[3 + input_name_length :]
 
@@ -148,7 +145,6 @@ class UNiiEventRecord(UNiiData):
         if device_name_length > 0:
             device_name = data[3 : 3 + device_name_length]
             self.device_name = device_name.decode("ascii")
-            offset += device_name_length
 
         data = data[3 + device_name_length :]
 
@@ -255,9 +251,6 @@ class UNiiInputStatus(dict, UNiiData):
             input_status = UNiiInputStatusRecord(input_number, input_status)
             self[input_number + 1] = input_status
 
-    # def __str__(self) -> str:
-    #     return str(self)
-
 
 class UNiiDeviceStatusRecord(IntFlag):
     """
@@ -314,22 +307,18 @@ class UNiiDeviceStatus(UNiiData):
 
         # IO Devices
         self.io_devices = device_status_records[1:16]
-        # logger.debug("%i IO Devices", len(self.io_devices))
 
         # Keyboard Devices
         self.keyboard_devices = device_status_records[16:32]
-        # logger.debug("%i Keyboard Devices", len(self.keyboard_devices))
 
         # Wiegand Devices
         self.wiegand_devices = device_status_records[32:48]
-        # logger.debug("%i Wiegand Devices", len(self.wiegand_devices))
 
         # KNX Device
         self.knx_device = device_status_records[48]
 
         # UWI Devices
         self.uwi_devices = device_status_records[49:51]
-        # logger.debug("%i UWI Devices", len(self.uwi_devices))
 
         # Redundant Device
         self.redundant_device = device_status_records[51]
@@ -437,7 +426,6 @@ class UNiiInputArrangement(dict, UNiiData):
             name_length = data[4 + offset]
             input_information = data[offset : 9 + offset + name_length]
             input_information = UNiiInput(input_information)
-            # logger.debug(input_information)
             self[input_information.number] = input_information
 
             offset += 9 + name_length
