@@ -409,7 +409,7 @@ class UNiiInput(dict):
             name = name.decode("ascii")
         self["name"] = name
         self["section"] = data[5 + name_length :]
-        self["status"] = None
+        self["status"] = UNiiInputState.DISABLED
 
 
 class UNiiInputArrangement(dict, UNiiData):
