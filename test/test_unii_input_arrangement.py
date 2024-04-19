@@ -1,6 +1,6 @@
 # pylint: disable=R0801
 """
-Test Input Status.
+Test Input Arrangement.
 """
 import asyncio
 import json
@@ -18,7 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class Test(unittest.TestCase):
     """
-    Test Input Status.
+    Test Input Arrangement.
     """
 
     _unii = None
@@ -41,6 +41,7 @@ class Test(unittest.TestCase):
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
             self.assertIsNotNone(self._unii.inputs, "Input Status not set")
+            self.assertEqual(len(self._unii.inputs), 616)
         finally:
             await asyncio.sleep(1)
             await self._unii.disconnect()

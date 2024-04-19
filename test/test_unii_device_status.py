@@ -41,6 +41,10 @@ class Test(unittest.TestCase):
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
             self.assertIsNotNone(self._unii.device_status, "Device Status not set")
+            self.assertEqual(len(self._unii.device_status.io_devices), 15)
+            self.assertEqual(len(self._unii.device_status.keyboard_devices), 16)
+            self.assertEqual(len(self._unii.device_status.wiegand_devices), 16)
+            self.assertEqual(len(self._unii.device_status.uwi_devices), 2)
         finally:
             await asyncio.sleep(1)
             await self._unii.disconnect()
