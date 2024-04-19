@@ -211,22 +211,31 @@ class UNiiInputStatusRecord(dict):
     # Get dictionarry keys as attributes.
     __getattr__ = dict.get
 
-    def __init__(self, input_number: int, data: int):
-        if input_number <= 511:
+    def __init__(self, index: int, data: int):
+        input_number = index
+        if index <= 511:
             self["type"] = UNiiInputType.WIRED
-        elif 512 >= input_number <= 543:
+            input_number += 1
+        elif 512 <= index <= 543:
             self["type"] = UNiiInputType.KEYPAD
-        elif 544 >= input_number <= 575:
+            input_number += 189
+        elif 544 <= index <= 575:
             self["type"] = UNiiInputType.SPARE
-        elif 576 >= input_number <= 639:
+            input_number = -1
+        elif 576 <= index <= 639:
             self["type"] = UNiiInputType.WIRELESS
-        elif 640 >= input_number <= 688:
+            input_number += 25
+        elif 640 <= index <= 688:
             self["type"] = UNiiInputType.KNX
-        elif 689 >= input_number <= 705:
+            input_number += 161
+        elif 689 <= index <= 705:
             self["type"] = UNiiInputType.SPARE
-        elif 706 >= input_number <= 962:
+            input_number = -1
+        elif 706 <= index <= 962:
             self["type"] = UNiiInputType.DOOR
+            input_number += 295
 
+        self["number"] = input_number
         self["status"] = UNiiInputState(data & 0x0F)
         self["bypassed"] = data & 0b00010000 == 0b00010000
         self["alarm_memorized"] = data & 0b00100000 == 0b00100000
@@ -247,9 +256,10 @@ class UNiiInputStatus(dict, UNiiData):
         if version != 2:
             raise ValueError()
 
-        for input_number, input_status in enumerate(data[2:]):
-            input_status = UNiiInputStatusRecord(input_number, input_status)
-            self[input_number + 1] = input_status
+        for index, input_status in enumerate(data[2:]):
+            input_status = UNiiInputStatusRecord(index, input_status)
+            if input_status.number >= 0:
+                self[input_status.number] = input_status
 
 
 class UNiiDeviceStatusRecord(IntFlag):
