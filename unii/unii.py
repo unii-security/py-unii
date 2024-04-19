@@ -222,13 +222,16 @@ class UNiiLocal(UNii):
             if input_number in self.inputs:
                 self.inputs[input_number].update(input_status)
             else:
-                pass
+                # This should never happen
+                logger.warning("Status for unknown input %i changed", input_number)
 
     def _handle_input_arrangement(self, data: UNiiInputArrangement):
         for input_number, unii_input in data.items():
             if input_number not in self.inputs:
                 self.inputs[input_number] = unii_input
             else:
+                # Retain the input status before updating the input with new data.
+                unii_input.status = self.inputs[input_number].status
                 self.inputs[input_number].update(unii_input)
 
     async def _message_received_callback(
