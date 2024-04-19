@@ -470,10 +470,12 @@ class UNiiEquipmentInformation(UNiiData):
             .decode("ascii")
             .strip(string.whitespace + "\x00")
         )
-        self.max_inputs = data[-5]
-        self.max_groups = data[-4]
-        self.max_sections = data[-3]
-        self.max_users = int.from_bytes(data[-2:])
+        data = data[20 + device_name_length :]
+
+        self.max_inputs = int.from_bytes(data[0:2])
+        self.max_groups = data[2]
+        self.max_sections = data[3]
+        self.max_users = int.from_bytes(data[4:])
 
     def __str__(self) -> str:
         return str(
