@@ -32,9 +32,6 @@ class Test(unittest.TestCase):
             self._host = settings.get("host")
             self._port = settings.get("unencrypted_port", self._port)
 
-    def tearDown(self):
-        pass
-
     def test_create_unii_object(self):
         """
         Test creating an Alphatronics UNii object

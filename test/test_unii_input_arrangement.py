@@ -32,9 +32,6 @@ class Test(unittest.TestCase):
 
             self._unii = UNiiLocal(host, port, shared_key)
 
-    def tearDown(self):
-        pass
-
     @async_test
     async def test_device_status(self):
         """

@@ -37,9 +37,6 @@ class Test(unittest.TestCase):
             self._port = settings.get("encrypted_port", self._port)
             self._shared_key = bytes.fromhex(settings.get("shared_key"))
 
-    def tearDown(self):
-        pass
-
     def test_create_unii_object(self):
         """
         Test creating an Alphatronics UNii object
