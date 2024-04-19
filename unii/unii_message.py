@@ -341,28 +341,33 @@ class UNiiResponseMessage(_UNiiMessage):
         if data_length > 0:
             data = payload[4 : 4 + data_length]
             # logger.debug("%s data: %i bytes, 0x%s", self.command, len(data), data.hex())
-            match self.command:
-                case UNiiCommand.GENERAL_RESPONSE:
-                    data = UNiiResultCode(data)
-                case UNiiCommand.EVENT_OCCURRED:
-                    data = UNiiEventRecord(data)
-                case UNiiCommand.INPUT_STATUS_CHANGED:
-                    data = UNiiInputStatus(data)
-                case UNiiCommand.DEVICE_STATUS_CHANGED:
-                    data = UNiiDeviceStatus(data)
-                case UNiiCommand.RESPONSE_READY_TO_ARM_SECTIONS:
-                    data = UNiiReadyToArmSectionState(data)
-                case UNiiCommand.RESPONSE_ARM_SECTION:
-                    data = UNiiArmSectionState(data)
-                case UNiiCommand.RESPONSE_DISARM_SECTION:
-                    data = UNiiDisarmSectionState(data)
+            try:
+                match self.command:
+                    case UNiiCommand.GENERAL_RESPONSE:
+                        data = UNiiResultCode(data)
+                    case UNiiCommand.EVENT_OCCURRED:
+                        data = UNiiEventRecord(data)
+                    case UNiiCommand.INPUT_STATUS_CHANGED:
+                        data = UNiiInputStatus(data)
+                    case UNiiCommand.DEVICE_STATUS_CHANGED:
+                        data = UNiiDeviceStatus(data)
+                    case UNiiCommand.RESPONSE_READY_TO_ARM_SECTIONS:
+                        data = UNiiReadyToArmSectionState(data)
+                    case UNiiCommand.RESPONSE_ARM_SECTION:
+                        data = UNiiArmSectionState(data)
+                    case UNiiCommand.RESPONSE_DISARM_SECTION:
+                        data = UNiiDisarmSectionState(data)
 
-                case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
-                    data = UNiiInputArrangement(data)
-                case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
-                    data = UNiiEquipmentInformation(data)
-                case _:
-                    data = UNiiRawData(data)
+                    case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
+                        data = UNiiInputArrangement(data)
+                    case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
+                        data = UNiiEquipmentInformation(data)
+                    case _:
+                        data = UNiiRawData(data)
+            except (ValueError, LookupError) as ex:
+                logger.error(ex)
+                # Fall back to raw data
+                data = UNiiRawData(data)
         self.data = data
 
     def _decrypt(self, shared_key: bytes, initial_value: bytes, payload: bytes):
