@@ -122,90 +122,13 @@ class UNiiLocal(UNii):
                 False,
             )
 
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x01"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x02"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x03"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x04"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x05"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x06"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x07"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x08"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x09"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x0a"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x0b"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x0c"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x0d"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
-            await self._send_receive(
-                UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                UNiiRawData(b"\x00\x0e"),
-                UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
-                False,
-            )
+            for i in range(1, 15):
+                await self._send_receive(
+                    UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
+                    UNiiRawData(i.to_bytes(2)),
+                    UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                    False,
+                )
 
             await self._send_receive(
                 UNiiCommand.REQUEST_INPUT_STATUS,
