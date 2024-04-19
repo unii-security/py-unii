@@ -156,9 +156,9 @@ class UNiiTCPConnection(UNiiConnection):
                 with self._writer_lock:
                     self._writer.close()
                     await self._writer.wait_closed()
-                    self._writer = None
-            except ConnectionResetError:
-                pass
+            except ConnectionResetError as ex:
+                logger.error(ex)
+        self._writer = None
         self._reader = None
         # self._session_id = None
 
