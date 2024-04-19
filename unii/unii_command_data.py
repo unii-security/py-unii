@@ -90,7 +90,7 @@ class UNiiEventRecord(UNiiData):
         # Version
         version = data[1]
         if version != 3:
-            raise TypeError()
+            raise ValueError()
 
         # Event Number
         self.event_number = int.from_bytes(data[2:4])
@@ -249,7 +249,7 @@ class UNiiInputStatus(dict, UNiiData):
         # Version
         version = data[1]
         if version != 2:
-            raise TypeError()
+            raise ValueError()
 
         for input_number, input_status in enumerate(data[2:]):
             input_status = UNiiInputStatusRecord(input_number, input_status)
@@ -300,7 +300,7 @@ class UNiiDeviceStatus(UNiiData):
         # Version
         # version = data[1]
         # if version != 2:
-        #     raise TypeError()
+        #     raise ValueError()
 
         # Split data in chunks of 2 bytes
         chunks = [data[pos : pos + 2] for pos in range(0, len(data), 2)]
@@ -428,7 +428,7 @@ class UNiiInputArrangement(dict, UNiiData):
         block_number = int.from_bytes(data[2:4])
 
         if block_number == 0xFFFF:
-            raise TypeError()
+            raise ValueError()
 
         self.block_number = block_number
 
@@ -459,7 +459,7 @@ class UNiiEquipmentInformation(UNiiData):
         # Version
         version = data[1]
         if version != 2:
-            raise TypeError()
+            raise ValueError()
 
         self.software_version = data[2:7].decode("ascii")
         software_date = data[7:19].decode("ascii").strip(string.whitespace + "\x00")
