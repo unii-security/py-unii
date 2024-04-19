@@ -16,6 +16,7 @@ from .unii_command_data import (
     UNiiDeviceStatus,
     UNiiEquipmentInformation,
     UNiiInputArrangement,
+    UNiiInputState,
     UNiiInputStatus,
     UNiiRawData,
 )
@@ -221,7 +222,7 @@ class UNiiLocal(UNii):
         for input_number, input_status in data.items():
             if input_number in self.inputs:
                 self.inputs[input_number].update(input_status)
-            else:
+            elif input_status.status != UNiiInputState.DISABLED:
                 # This should never happen
                 logger.warning("Status for unknown input %i changed", input_number)
 
