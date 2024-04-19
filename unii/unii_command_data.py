@@ -189,18 +189,8 @@ class UNiiInputState(IntEnum):
     MASKING: Final = 0x4
     DISABLED: Final = 0xF
 
-
-class UNiiInputType(IntEnum):
-    """
-    The available input types.
-    """
-
-    WIRED: Final = auto()
-    KEYPAD: Final = auto()
-    SPARE: Final = auto()
-    WIRELESS: Final = auto()
-    KNX: Final = auto()
-    DOOR: Final = auto()
+    def __str__(self) -> str:
+        return self.name
 
 
 class UNiiInputStatusRecord(dict):
@@ -214,32 +204,24 @@ class UNiiInputStatusRecord(dict):
     def __init__(self, index: int, data: int):
         input_number = index
         if index <= 511:
-            self["type"] = UNiiInputType.WIRED
             input_number += 1
         elif 512 <= index <= 543:
-            self["type"] = UNiiInputType.KEYPAD
             input_number += 189
         elif 544 <= index <= 575:
-            self["type"] = UNiiInputType.SPARE
             input_number = -1
         elif 576 <= index <= 639:
-            self["type"] = UNiiInputType.WIRELESS
             input_number += 25
         elif 640 <= index <= 688:
-            self["type"] = UNiiInputType.KNX
             input_number += 161
         elif 689 <= index <= 705:
-            self["type"] = UNiiInputType.SPARE
             input_number = -1
         elif 706 <= index <= 962:
-            self["type"] = UNiiInputType.DOOR
             input_number += 295
 
         self["number"] = input_number
         self["status"] = UNiiInputState(data & 0x0F)
         self["bypassed"] = data & 0b00010000 == 0b00010000
         self["alarm_memorized"] = data & 0b00100000 == 0b00100000
-        # if self["type"] == UNiiInputType.WIRELESS:
         self["low_battery"] = data & 0b01000000 == 0b01000000
         self["supervision"] = data & 0b10000000 == 0b10000000
 
@@ -390,6 +372,56 @@ class UNiiDisarmSectionState(UNiiData):
     DISARMING_FAILED_NOT_AUTHORIZED: Final = 3
 
 
+class UNiiInputType(IntEnum):
+    """
+    The available input types.
+    """
+
+    WIRED: Final = auto()
+    KEYPAD: Final = auto()
+    SPARE: Final = auto()
+    WIRELESS: Final = auto()
+    KNX: Final = auto()
+    DOOR: Final = auto()
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class UNiiSensorType(IntEnum):
+    NOT_ACTIVE: Final = 0
+    BURGLARY: Final = 1
+    FIRE: Final = 2
+    TAMPER: Final = 3
+    HOLDUP: Final = 4
+    MEDICAL: Final = 5
+    GAS: Final = 6
+    WATER: Final = 7
+    TECHNICAL: Final = 8
+    DIRECT_DIALER_INPUT: Final = 9 
+    KEYSWITCH: Final = 10
+    NO_ALARM: Final = 11
+    EN54_FIRE: Final = 12
+    EN54_FIRE_MCP: Final = 13
+    EN54_FAULT: Final = 14
+    GLASSBREAK: Final = 15
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class UNiiReaction(IntEnum):
+    DIRECT: Final = 0
+    DELAYED: Final = 1
+    FOLLOWER: Final = 2
+    TWENT_FOUR_HOUR: Final = 3
+    LAST_DOOR: Final = 4
+    DELAYED_ALARM: Final = 5
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class UNiiInput(dict):
     """
     UNii Input
@@ -399,9 +431,24 @@ class UNiiInput(dict):
     __getattr__ = dict.get
 
     def __init__(self, data: bytes):
-        self["number"] = int.from_bytes(data[0:2])
-        self["type"] = data[2]
-        self["reaction"] = data[3]
+        input_number = int.from_bytes(data[0:2])
+        self["number"] = input_number
+
+        input_type = UNiiInputType.SPARE
+        if 1 <= input_number <= 512:
+            input_type = UNiiInputType.WIRED
+        elif 701 <= input_number <= 732:
+            input_type = UNiiInputType.KEYPAD
+        elif 601 <= input_number <= 664:
+            input_type = UNiiInputType.WIRELESS
+        elif 801 <= input_number <= 845:
+            input_type = UNiiInputType.KNX
+        elif 1001 <= input_number <= 1128:
+            input_type = UNiiInputType.DOOR
+        self["type"] = input_type
+
+        self["sensor_type"] = UNiiSensorType(data[2])
+        self["reaction"] = UNiiReaction(data[3])
         name_length = data[4]
         name = None
         if name_length > 0:
