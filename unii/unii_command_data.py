@@ -47,7 +47,7 @@ class UNiiRawData(UNiiData, UNiiSendData):
     def to_bytes(self):
         return self.raw_data
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return "0x" + self.raw_data.hex()
 
 
