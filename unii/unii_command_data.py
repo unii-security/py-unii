@@ -313,7 +313,10 @@ class UNiiDeviceStatus(UNiiData):
         self.uwi_devices = device_status_records[49:51]
 
         # Redundant Device
-        # self.redundant_device = device_status_records[51]
+        redundant_device = None
+        if len(device_status_records) == 52:
+            redundant_device = device_status_records[51]
+        self.redundant_device = redundant_device
 
     def __str__(self) -> str:
         return str(
