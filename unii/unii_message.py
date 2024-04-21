@@ -37,7 +37,7 @@ class UNiiChecksumError(UNiiMessageError):
     """
     UNii Checksum Error.
 
-    When a received message fails validation agianst the checksum this error is thrown.
+    When a received message fails validation against the checksum this error is thrown.
     """
 
     def __init__(self, expected_checksum: int, received_checksum: int):

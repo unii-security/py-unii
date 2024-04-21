@@ -295,7 +295,7 @@ class UNiiLocal(UNii):
             # logger.debug("Waiting for message %i to be received", tx_sequence)
             await asyncio.sleep(0.1)
 
-        logger.error("Message %i was not recieved", tx_sequence)
+        logger.error("Message %i was not received", tx_sequence)
         del self._waiting_for_message[tx_sequence]
         return [None, None]
 

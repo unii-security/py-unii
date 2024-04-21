@@ -89,7 +89,7 @@ class UNiiConnection(ABC):
         data: UNiiData = None,
     ) -> bool:
         """
-        Write to Alphatronics UNii and returns the respons.
+        Write to Alphatronics UNii and returns the response.
         """
         raise NotImplementedError
 
@@ -133,7 +133,7 @@ class UNiiTCPConnection(UNiiConnection):
                 self._close_connection = False
                 # Fixed session ID only one session
                 self._session_id = 0xFFFF
-                # Start with a random TX Seqence
+                # Start with a random TX Sequence
                 self._tx_sequence = random.randint(0, 65535)
 
                 # Start the read coroutine
