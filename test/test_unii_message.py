@@ -201,6 +201,25 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data.device_name, "UNii centrale")
         self.assertEqual(message.data.sia_code, SIACode.REMOTE_PROGRAM_SUCCESS)
 
+    def test_section_arrangement(self):
+        # pylint: disable=line-too-long
+        message = UNiiResponseMessage(
+            bytes.fromhex(
+                "a6947bb0970e0000c78e05020040308e8d444538679e74bfde534279bf107e1df375b473bb91c40cd5b99d9316491e5b4b43cb806c8520cdb12660359db150c2"
+            ),
+            bytes.fromhex("31323334353637383930616263646566"),
+        )
+        _LOGGER.debug(message)
+        self.assertEqual(message.session_id, 0xA694)
+        self.assertEqual(message.tx_sequence, 0x7BB0970E)
+        self.assertEqual(message.rx_sequence, 0x0000C78E)
+        self.assertEqual(
+            message.command, UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT
+        )
+        self.assertIsNotNone(message.data)
+        self.assertEqual(message.data[0].status, 0x01)
+        self.assertEqual(message.data[0].name, "Sectie 1")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']

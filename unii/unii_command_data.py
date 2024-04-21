@@ -458,7 +458,13 @@ class UNiiInput(dict):
             name = data[5 : 5 + name_length]
             name = name.decode("ascii")
         self["name"] = name
-        self["section"] = data[5 + name_length :]
+        section_map = int.from_bytes(data[5 + name_length :])
+        sections = []
+        for i in range(0, 31):
+            section_bit: int = pow(2, i)
+            if section_map & section_bit:
+                sections.append(i + 1)
+        self["sections"] = sections
         self["status"] = UNiiInputState.DISABLED
 
 
@@ -535,3 +541,67 @@ class UNiiEquipmentInformation(UNiiData):
                 "device_name": self.device_name,
             }
         )
+
+
+class UNiiSectionState(IntEnum):
+    NOT_ACTIVE: Final = 0
+    ACTIVE: Final = 1
+
+    def __repr__(self) -> str:
+        return self.name
+
+
+class UNiiSection(dict):
+    """
+    UNii Section
+    """
+
+    # Get dictionarry keys as attributes.
+    __getattr__ = dict.get
+
+    def __init__(self, data: bytes):
+        # Version
+        version = data[0]
+        if version not in [0, 1]:
+            raise ValueError()
+
+        self["status"] = UNiiSectionState(data[1])
+        if version == 0:
+            name = data[2:19].decode("ascii").strip()
+        elif version == 1:
+            name_length = data[2]
+            name = data[3 : 3 + name_length].decode("ascii")
+        self["name"] = name
+
+    def __str__(self) -> str:
+        return str(
+            {
+                "status": self.status,
+                "name": self.name,
+            }
+        )
+
+
+class UNiiSectionArrangement(dict, UNiiData):
+    """
+    UNii Section Arrangement data class.
+    """
+
+    def __init__(self, data: bytes):
+        offset = 0
+        index = 1
+        while offset < len(data):
+            # Version
+            version = data[0 + offset]
+            if version not in [0, 1]:
+                raise ValueError()
+
+            section_length = 19
+            if version == 1:
+                section_length = data[offset + 2] + 3
+            section = UNiiSection(data[offset : offset + section_length])
+            section["number"] = index
+            self[index] = section
+
+            index += 1
+            offset += section_length

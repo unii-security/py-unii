@@ -19,6 +19,7 @@ from .unii_command_data import (
     UNiiInputState,
     UNiiInputStatus,
     UNiiRawData,
+    UNiiSectionArrangement,
 )
 from .unii_connection import (
     DEFAULT_PORT,
@@ -42,6 +43,7 @@ class UNii(ABC):
     connected = False
 
     equipment_information: UNiiEquipmentInformation = None
+    sections = {}
     inputs = {}
     device_status: UNiiDeviceStatus = None
 
@@ -120,6 +122,13 @@ class UNiiLocal(UNii):
                 UNiiCommand.REQUEST_EQUIPMENT_INFORMATION,
                 None,
                 UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION,
+                False,
+            )
+
+            await self._send_receive(
+                UNiiCommand.REQUEST_SECTION_ARRANGEMENT,
+                None,
+                UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT,
                 False,
             )
 
@@ -218,6 +227,13 @@ class UNiiLocal(UNii):
             return await self._get_received_message(tx_sequence, expected_response)
         return [None, None]
 
+    def _handle_section_arrangement(self, data: UNiiSectionArrangement):
+        for section_number, section in data.items():
+            if section_number not in self.inputs:
+                self.sections[section_number] = section
+            else:
+                self.sections[section_number].update(section)
+
     def _handle_input_status_changed(self, data: UNiiInputStatus):
         for input_number, input_status in data.items():
             if input_number in self.inputs:
@@ -228,6 +244,10 @@ class UNiiLocal(UNii):
 
     def _handle_input_arrangement(self, data: UNiiInputArrangement):
         for input_number, unii_input in data.items():
+            # Expand sections
+            for index, section in enumerate(unii_input.sections):
+                unii_input["sections"][index] = self.sections[section]
+
             if input_number not in self.inputs:
                 self.inputs[input_number] = unii_input
             else:
@@ -248,6 +268,8 @@ class UNiiLocal(UNii):
                 # self.inputs = data
             case UNiiCommand.DEVICE_STATUS_CHANGED:
                 self.device_status = data
+            case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:
+                self._handle_section_arrangement(data)
             case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                 self._handle_input_arrangement(data)
             case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
