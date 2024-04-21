@@ -139,15 +139,15 @@ class _UNiiMessage:
         # logger.debug("CRC-16 for 0x%s: %s", message.hex(), hex(crc))
         return crc
 
-    def __str__(self):
+    def __str__(self) -> str:
         # return "0x" + self._raw_message.hex()
         return str(
             {
                 "session_id": self.session_id,
                 "tx_sequence": self.tx_sequence,
                 "rx_sequence": self.rx_sequence,
-                "command": str(self.command),
-                "data": str(self.data),
+                "command": self.command,
+                "data": self.data,
             }
         )
 

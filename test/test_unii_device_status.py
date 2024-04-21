@@ -41,6 +41,7 @@ class Test(unittest.TestCase):
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
             self.assertIsNotNone(self._unii.device_status, "Device Status not set")
+            _LOGGER.debug(self._unii.device_status)
             self.assertEqual(len(self._unii.device_status.io_devices), 15)
             self.assertEqual(len(self._unii.device_status.keyboard_devices), 16)
             self.assertEqual(len(self._unii.device_status.wiegand_devices), 16)

@@ -118,7 +118,7 @@ class UNiiTCPConnection(UNiiConnection):
         self._shared_key = shared_key
         self._writer_lock = Lock()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self._host}:{self._port}"
 
     async def connect(self):

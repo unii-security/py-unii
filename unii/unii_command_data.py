@@ -163,7 +163,7 @@ class UNiiEventRecord(UNiiData):
         return str(
             {
                 "event_number": self.event_number,
-                "timestamp": self.timestamp,
+                "timestamp": str(self.timestamp),
                 "event_description": self.event_description,
                 "user_id": self.user_id,
                 "user_name": self.user_name,
@@ -189,7 +189,7 @@ class UNiiInputState(IntEnum):
     MASKING: Final = 0x4
     DISABLED: Final = 0xF
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.name
 
 
@@ -266,8 +266,8 @@ class UNiiDeviceStatusRecord(IntFlag):
     MAINS_FAILURE_RESTORED: Final = 2
     MAINS_FAILURE: Final = 1
 
-    def __str__(self) -> str:
-        return self.name
+    def __repr__(self) -> str:
+        return str(self.name)
 
 
 class UNiiDeviceStatus(UNiiData):
@@ -384,7 +384,7 @@ class UNiiInputType(IntEnum):
     KNX: Final = auto()
     DOOR: Final = auto()
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.name
 
 
@@ -398,7 +398,7 @@ class UNiiSensorType(IntEnum):
     GAS: Final = 6
     WATER: Final = 7
     TECHNICAL: Final = 8
-    DIRECT_DIALER_INPUT: Final = 9 
+    DIRECT_DIALER_INPUT: Final = 9
     KEYSWITCH: Final = 10
     NO_ALARM: Final = 11
     EN54_FIRE: Final = 12
@@ -406,7 +406,7 @@ class UNiiSensorType(IntEnum):
     EN54_FAULT: Final = 14
     GLASSBREAK: Final = 15
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.name
 
 
@@ -418,7 +418,7 @@ class UNiiReaction(IntEnum):
     LAST_DOOR: Final = 4
     DELAYED_ALARM: Final = 5
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.name
 
 
@@ -528,7 +528,7 @@ class UNiiEquipmentInformation(UNiiData):
         return str(
             {
                 "software_version": self.software_version,
-                "software_date": self.software_date,
+                "software_date": str(self.software_date),
                 "device_name": self.device_name,
             }
         )

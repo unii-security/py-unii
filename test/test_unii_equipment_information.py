@@ -47,6 +47,7 @@ class Test(unittest.TestCase):
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
             self.assertIsNotNone(self._unii.equipment_information)
+            _LOGGER.debug(self._unii.equipment_information)
             self.assertEqual(
                 self._unii.equipment_information.device_name,
                 "Unii",
