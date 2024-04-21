@@ -64,3 +64,6 @@ class UNiiCommand(IntEnum):
     RESPONSE_REQUEST_DATE_AND_TIME: Final = 0x0145
     WRITE_DATE_AND_TIME: Final = 0x0146
     RESPONSE_WRITE_DATE_AND_TIME: Final = 0x0147
+
+    def __str__(self) -> str:
+        return self.name

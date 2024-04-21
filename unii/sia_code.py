@@ -183,3 +183,6 @@ class SIACode(StrEnum):
     LOW_VOLTAGE_RESTORAL: Final = "XG"
     DEEP_CHARGE: Final = "XK"
     LOCKED_OUT: Final = "WW"
+
+    def __repr__(self) -> str:
+        return self.name
