@@ -22,6 +22,7 @@ from .unii_command_data import (
     UNiiReadyToArmSectionState,
     UNiiResultCode,
     UNiiSectionArrangement,
+    UNiiSectionStatus,
 )
 
 logger = logging.getLogger(__name__)
@@ -360,6 +361,8 @@ class UNiiResponseMessage(_UNiiMessage):
                         data = UNiiDisarmSectionState(data)
                     case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:
                         data = UNiiSectionArrangement(data)
+                    case UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS:
+                        data = UNiiSectionStatus(data)
                     case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                         data = UNiiInputArrangement(data)
                     case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:

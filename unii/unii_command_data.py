@@ -156,14 +156,6 @@ class UNiiSection(dict):
             name = data[3 : 3 + name_length].decode("ascii")
         self["name"] = name
 
-    def __str__(self) -> str:
-        return str(
-            {
-                "active": self.status,
-                "name": self.name,
-            }
-        )
-
 
 class UNiiSectionArrangement(dict, UNiiData):
     """
@@ -190,6 +182,34 @@ class UNiiSectionArrangement(dict, UNiiData):
 
             index += 1
             offset += section_length
+
+
+class UNiiSectionArmedState(IntEnum):
+    """
+    The available armed states.
+    """
+
+    NOT_PRROGRAMMED: Final = 0
+    SECTION_ARMED: Final = 1
+    SECTION_DISARMED: Final = 2
+
+    def __repr__(self) -> str:
+        return self.name
+
+
+class UNiiSectionStatus(dict, UNiiData):
+    """
+    UNii Section Status data class.
+
+    This data class containt the response of the "Request Section Status" command.
+    """
+
+    # Get dictionarry keys as attributes.
+    __getattr__ = dict.get
+
+    def __init__(self, data: bytes):
+        self["number"] = data[0]
+        self["armed_state"] = UNiiSectionArmedState(data[1])
 
 
 class UNiiReadyToArmSectionState(UNiiData):

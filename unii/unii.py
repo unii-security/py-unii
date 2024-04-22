@@ -20,6 +20,7 @@ from .unii_command_data import (
     UNiiInputStatus,
     UNiiRawData,
     UNiiSectionArrangement,
+    UNiiSectionStatus,
 )
 from .unii_connection import (
     DEFAULT_PORT,
@@ -132,6 +133,14 @@ class UNiiLocal(UNii):
                 False,
             )
 
+            for _, section in self.sections.items():
+                await self._send_receive(
+                    UNiiCommand.REQUEST_SECTION_STATUS,
+                    UNiiRawData(section.number.to_bytes(1)),
+                    UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS,
+                    False,
+                )
+
             for i in range(1, 15):
                 await self._send_receive(
                     UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
@@ -234,6 +243,9 @@ class UNiiLocal(UNii):
             else:
                 self.sections[section_number].update(section)
 
+    def _handle_section_status(self, data: UNiiSectionStatus):
+        self.sections[data.number]["armed_state"] = data["armed_state"]
+
     def _handle_input_status_changed(self, data: UNiiInputStatus):
         for input_number, input_status in data.items():
             if input_number in self.inputs:
@@ -270,6 +282,8 @@ class UNiiLocal(UNii):
                 self.device_status = data
             case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:
                 self._handle_section_arrangement(data)
+            case UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS:
+                self._handle_section_status(data)
             case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                 self._handle_input_arrangement(data)
             case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:

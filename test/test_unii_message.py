@@ -217,8 +217,8 @@ class Test(unittest.TestCase):
             message.command, UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT
         )
         self.assertIsNotNone(message.data)
-        self.assertEqual(message.data[0].status, 0x01)
-        self.assertEqual(message.data[0].name, "Sectie 1")
+        self.assertEqual(message.data[1].active, True)
+        self.assertEqual(message.data[1].name, "Sectie 1")
 
 
 if __name__ == "__main__":
