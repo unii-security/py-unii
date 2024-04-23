@@ -89,7 +89,7 @@ class UNiiConnection(ABC):
         data: UNiiData = None,
     ) -> bool:
         """
-        Write to Alphatronics UNii and returns the respons.
+        Write to Alphatronics UNii and returns the response.
         """
         raise NotImplementedError
 
@@ -118,7 +118,7 @@ class UNiiTCPConnection(UNiiConnection):
         self._shared_key = shared_key
         self._writer_lock = Lock()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self._host}:{self._port}"
 
     async def connect(self):
@@ -133,7 +133,7 @@ class UNiiTCPConnection(UNiiConnection):
                 self._close_connection = False
                 # Fixed session ID only one session
                 self._session_id = 0xFFFF
-                # Start with a random TX Seqence
+                # Start with a random TX Sequence
                 self._tx_sequence = random.randint(0, 65535)
 
                 # Start the read coroutine
@@ -156,9 +156,9 @@ class UNiiTCPConnection(UNiiConnection):
                 with self._writer_lock:
                     self._writer.close()
                     await self._writer.wait_closed()
-                    self._writer = None
-            except ConnectionResetError:
-                pass
+            except ConnectionResetError as ex:
+                logger.error(ex)
+        self._writer = None
         self._reader = None
         # self._session_id = None
 
@@ -202,7 +202,7 @@ class UNiiTCPConnection(UNiiConnection):
                 message = UNiiResponseMessage(response, self._shared_key)
                 if message.command not in [
                     # UNiiCommand.CONNECTION_REQUEST_RESPONSE,
-                    # UNiiCommand.POLL_ALIVE_RESPONSE,
+                    UNiiCommand.POLL_ALIVE_RESPONSE,
                     UNiiCommand.INPUT_STATUS_CHANGED,
                     UNiiCommand.DEVICE_STATUS_CHANGED,
                     UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
@@ -210,6 +210,10 @@ class UNiiTCPConnection(UNiiConnection):
                 ]:
                     logger.debug("Received: 0x%s", response.hex())
                     logger.debug("Received: %s", message)
+                else:
+                    logger.debug(
+                        "Received: %i, %s", message.rx_sequence, message.command
+                    )
                 self.last_message_received = datetime.now()
                 # logger.debug("Last message received: %s", self.last_message_sent)
                 if message.rx_sequence != self._tx_sequence:

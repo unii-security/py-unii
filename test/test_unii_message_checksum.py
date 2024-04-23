@@ -17,14 +17,9 @@ class Test(unittest.TestCase):
     Test UNii message checksum correctness.
     """
 
-    # def setUp(self):
-    #     logging.basicConfig(
-    #         format="%(asctime)s %(levelname)-8s %(message)s", level=logging.DEBUG
-    #     )
-
     def test_checksum_1(self):
         """
-        Tests the correct working of the checksum algorythm.
+        Tests the correct working of the checksum algorithm.
         """
         message = _UNiiMessage()
 
@@ -33,7 +28,7 @@ class Test(unittest.TestCase):
 
     def test_checksum_2(self):
         """
-        Tests the correct working of the checksum algorythm.
+        Tests the correct working of the checksum algorithm.
         """
         message = _UNiiMessage()
 
@@ -42,7 +37,7 @@ class Test(unittest.TestCase):
 
     def test_checksum_3(self):
         """
-        Tests the correct working of the checksum algorythm.
+        Tests the correct working of the checksum algorithm.
         """
         message = _UNiiMessage()
 
@@ -55,7 +50,7 @@ class Test(unittest.TestCase):
 
     def test_checksum_4(self):
         """
-        Tests the correct working of the checksum algorythm.
+        Tests the correct working of the checksum algorithm.
         """
         message = _UNiiMessage()
 

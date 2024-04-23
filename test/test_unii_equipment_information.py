@@ -15,6 +15,12 @@ _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
 
+# These values apply to my system, check the specs of your system and adjust accordingly.
+MAX_INPUTS = 978
+MAX_GROUPS = 32
+MAX_SECTIONS = 4
+MAX_USERS = 50
+
 
 class Test(unittest.TestCase):
     """
@@ -27,12 +33,10 @@ class Test(unittest.TestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             host = settings.get("host")
-            port = settings.get("unencrypted_port", 6502)
+            port = settings.get("encrypted_port", 6502)
+            shared_key = settings.get("shared_key", 6502)
 
-            self._unii = UNiiLocal(host, port)
-
-    def tearDown(self):
-        pass
+            self._unii = UNiiLocal(host, port, shared_key)
 
     @async_test
     async def test_equipment_information(self):
@@ -43,15 +47,18 @@ class Test(unittest.TestCase):
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
             self.assertIsNotNone(self._unii.equipment_information)
+            _LOGGER.debug(self._unii.equipment_information)
             self.assertEqual(
                 self._unii.equipment_information.device_name,
                 "Unii",
                 "Device name does not match",
             )
-            self.assertEqual(self._unii.equipment_information.max_inputs, 210)
-            self.assertEqual(self._unii.equipment_information.max_groups, 32)
-            self.assertEqual(self._unii.equipment_information.max_sections, 4)
-            self.assertEqual(self._unii.equipment_information.max_users, 50)
+            self.assertEqual(self._unii.equipment_information.max_inputs, MAX_INPUTS)
+            self.assertEqual(self._unii.equipment_information.max_groups, MAX_GROUPS)
+            self.assertEqual(
+                self._unii.equipment_information.max_sections, MAX_SECTIONS
+            )
+            self.assertEqual(self._unii.equipment_information.max_users, MAX_USERS)
         finally:
             await asyncio.sleep(1)
             await self._unii.disconnect()

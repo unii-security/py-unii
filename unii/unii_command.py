@@ -11,7 +11,7 @@ class UNiiCommand(IntEnum):
     UNii Commands
     """
 
-    # Real commands as used by the UNii
+    # Connection setup
     CONNECTION_REQUEST: Final = 0x0001
     CONNECTION_REQUEST_RESPONSE: Final = 0x0002
     CONNECTION_REQUEST_DENIED: Final = 0x0003
@@ -66,4 +66,7 @@ class UNiiCommand(IntEnum):
     RESPONSE_WRITE_DATE_AND_TIME: Final = 0x0147
 
     def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
         return self.name

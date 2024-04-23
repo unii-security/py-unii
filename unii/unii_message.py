@@ -10,17 +10,19 @@ from Crypto.Cipher import AES
 
 from .unii_command import UNiiCommand
 from .unii_command_data import (
-    UNiiArmSectionState,
+    UNiiArmSectionStatus,
     UNiiData,
     UNiiDeviceStatus,
-    UNiiDisarmSectionState,
+    UNiiDisarmSectionStatus,
     UNiiEquipmentInformation,
     UNiiEventRecord,
     UNiiInputArrangement,
     UNiiInputStatus,
     UNiiRawData,
-    UNiiReadyToArmSectionState,
+    UNiiReadyToArmSectionStatus,
     UNiiResultCode,
+    UNiiSectionArrangement,
+    UNiiSectionStatus,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,7 +38,7 @@ class UNiiChecksumError(UNiiMessageError):
     """
     UNii Checksum Error.
 
-    When a received message fails validation agianst the checksum this error is thrown.
+    When a received message fails validation against the checksum this error is thrown.
     """
 
     def __init__(self, expected_checksum: int, received_checksum: int):
@@ -139,15 +141,15 @@ class _UNiiMessage:
         # logger.debug("CRC-16 for 0x%s: %s", message.hex(), hex(crc))
         return crc
 
-    def __str__(self):
+    def __str__(self) -> str:
         # return "0x" + self._raw_message.hex()
         return str(
             {
                 "session_id": self.session_id,
                 "tx_sequence": self.tx_sequence,
                 "rx_sequence": self.rx_sequence,
-                "command": str(self.command),
-                "data": str(self.data),
+                "command": self.command,
+                "data": self.data,
             }
         )
 
@@ -239,13 +241,6 @@ class UNiiRequestMessage(_UNiiMessage):
         if shared_key is not None:
             # logger.debug("Payload: 0x%s", payload.hex())
             # logger.debug("Shared Key: 0x%s", shared_key.hex())
-            shared_key = bytearray(shared_key)
-            if len(shared_key) > 16:
-                shared_key = shared_key[:16]
-
-            # If the input is shorter than 16 bytes it's padded with spaces (0x20).
-            while len(shared_key) < 16:
-                shared_key.append(0x20)
 
             # As Initialization Vector for the encryption the first 12 bytes of the header are used.
             initial_value = header[:12]
@@ -348,28 +343,42 @@ class UNiiResponseMessage(_UNiiMessage):
         if data_length > 0:
             data = payload[4 : 4 + data_length]
             # logger.debug("%s data: %i bytes, 0x%s", self.command, len(data), data.hex())
-            match self.command:
-                case UNiiCommand.GENERAL_RESPONSE:
-                    data = UNiiResultCode(data)
-                case UNiiCommand.EVENT_OCCURRED:
-                    data = UNiiEventRecord(data)
-                case UNiiCommand.INPUT_STATUS_CHANGED:
-                    data = UNiiInputStatus(data)
-                case UNiiCommand.DEVICE_STATUS_CHANGED:
-                    data = UNiiDeviceStatus(data)
-                case UNiiCommand.RESPONSE_READY_TO_ARM_SECTIONS:
-                    data = UNiiReadyToArmSectionState(data)
-                case UNiiCommand.RESPONSE_ARM_SECTION:
-                    data = UNiiArmSectionState(data)
-                case UNiiCommand.RESPONSE_DISARM_SECTION:
-                    data = UNiiDisarmSectionState(data)
-
-                case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
-                    data = UNiiInputArrangement(data)
-                case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
-                    data = UNiiEquipmentInformation(data)
-                case _:
-                    data = UNiiRawData(data)
+            try:
+                match self.command:
+                    # Generic
+                    case UNiiCommand.GENERAL_RESPONSE:
+                        data = UNiiResultCode(data)
+                    # Equipment related
+                    case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
+                        data = UNiiEquipmentInformation(data)
+                    # Section related
+                    case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:
+                        data = UNiiSectionArrangement(data)
+                    case UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS:
+                        data = UNiiSectionStatus(data)
+                    case UNiiCommand.RESPONSE_READY_TO_ARM_SECTIONS:
+                        data = UNiiReadyToArmSectionStatus(data)
+                    case UNiiCommand.RESPONSE_ARM_SECTION:
+                        data = UNiiArmSectionStatus(data)
+                    case UNiiCommand.RESPONSE_DISARM_SECTION:
+                        data = UNiiDisarmSectionStatus(data)
+                    # Input related
+                    case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
+                        data = UNiiInputArrangement(data)
+                    case UNiiCommand.INPUT_STATUS_CHANGED:
+                        data = UNiiInputStatus(data)
+                    # Device related
+                    case UNiiCommand.DEVICE_STATUS_CHANGED:
+                        data = UNiiDeviceStatus(data)
+                    # Event related
+                    case UNiiCommand.EVENT_OCCURRED:
+                        data = UNiiEventRecord(data)
+                    case _:
+                        data = UNiiRawData(data)
+            except (ValueError, LookupError) as ex:
+                logger.error(ex)
+                # Fall back to raw data
+                data = UNiiRawData(data)
         self.data = data
 
     def _decrypt(self, shared_key: bytes, initial_value: bytes, payload: bytes):

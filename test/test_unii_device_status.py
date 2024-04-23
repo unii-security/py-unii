@@ -27,12 +27,10 @@ class Test(unittest.TestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             host = settings.get("host")
-            port = settings.get("unencrypted_port", 6502)
+            port = settings.get("encrypted_port", 6502)
+            shared_key = settings.get("shared_key", 6502)
 
-            self._unii = UNiiLocal(host, port)
-
-    def tearDown(self):
-        pass
+            self._unii = UNiiLocal(host, port, shared_key)
 
     @async_test
     async def test_device_status(self):
@@ -42,9 +40,12 @@ class Test(unittest.TestCase):
         try:
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
-            # while self._unii.device_status is None:
-            #     await asyncio.sleep(0.1)
             self.assertIsNotNone(self._unii.device_status, "Device Status not set")
+            _LOGGER.debug(self._unii.device_status)
+            self.assertEqual(len(self._unii.device_status.io_devices), 15)
+            self.assertEqual(len(self._unii.device_status.keyboard_devices), 16)
+            self.assertEqual(len(self._unii.device_status.wiegand_devices), 16)
+            self.assertEqual(len(self._unii.device_status.uwi_devices), 2)
         finally:
             await asyncio.sleep(1)
             await self._unii.disconnect()
