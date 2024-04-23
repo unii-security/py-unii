@@ -189,9 +189,10 @@ class UNiiSectionArmedState(IntEnum):
     The available armed states.
     """
 
-    NOT_PRROGRAMMED: Final = 0
-    SECTION_ARMED: Final = 1
-    SECTION_DISARMED: Final = 2
+    NOT_PROGRAMMED: Final = 0
+    ARMED: Final = 1
+    DISARMED: Final = 2
+    ALARM: Final = 7
 
     def __repr__(self) -> str:
         return self.name
