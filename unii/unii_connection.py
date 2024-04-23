@@ -202,7 +202,7 @@ class UNiiTCPConnection(UNiiConnection):
                 message = UNiiResponseMessage(response, self._shared_key)
                 if message.command not in [
                     # UNiiCommand.CONNECTION_REQUEST_RESPONSE,
-                    # UNiiCommand.POLL_ALIVE_RESPONSE,
+                    UNiiCommand.POLL_ALIVE_RESPONSE,
                     UNiiCommand.INPUT_STATUS_CHANGED,
                     UNiiCommand.DEVICE_STATUS_CHANGED,
                     UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
