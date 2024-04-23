@@ -345,28 +345,34 @@ class UNiiResponseMessage(_UNiiMessage):
             # logger.debug("%s data: %i bytes, 0x%s", self.command, len(data), data.hex())
             try:
                 match self.command:
+                    # Generic
                     case UNiiCommand.GENERAL_RESPONSE:
                         data = UNiiResultCode(data)
-                    case UNiiCommand.EVENT_OCCURRED:
-                        data = UNiiEventRecord(data)
-                    case UNiiCommand.INPUT_STATUS_CHANGED:
-                        data = UNiiInputStatus(data)
-                    case UNiiCommand.DEVICE_STATUS_CHANGED:
-                        data = UNiiDeviceStatus(data)
+                    # Equipment related
+                    case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
+                        data = UNiiEquipmentInformation(data)
+                    # Section related
+                    case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:
+                        data = UNiiSectionArrangement(data)
+                    case UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS:
+                        data = UNiiSectionStatus(data)
                     case UNiiCommand.RESPONSE_READY_TO_ARM_SECTIONS:
                         data = UNiiReadyToArmSectionState(data)
                     case UNiiCommand.RESPONSE_ARM_SECTION:
                         data = UNiiArmSectionState(data)
                     case UNiiCommand.RESPONSE_DISARM_SECTION:
                         data = UNiiDisarmSectionState(data)
-                    case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:
-                        data = UNiiSectionArrangement(data)
-                    case UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS:
-                        data = UNiiSectionStatus(data)
+                    # Input related
                     case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                         data = UNiiInputArrangement(data)
-                    case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
-                        data = UNiiEquipmentInformation(data)
+                    case UNiiCommand.INPUT_STATUS_CHANGED:
+                        data = UNiiInputStatus(data)
+                    # Device related
+                    case UNiiCommand.DEVICE_STATUS_CHANGED:
+                        data = UNiiDeviceStatus(data)
+                    # Event related
+                    case UNiiCommand.EVENT_OCCURRED:
+                        data = UNiiEventRecord(data)
                     case _:
                         data = UNiiRawData(data)
             except (ValueError, LookupError) as ex:
