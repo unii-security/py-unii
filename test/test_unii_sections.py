@@ -7,7 +7,7 @@ import json
 import logging
 import unittest
 
-from unii import UNiiInputState, UNiiLocal
+from unii import UNiiLocal
 
 from . import async_test
 
