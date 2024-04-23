@@ -12,8 +12,13 @@ from typing import Final
 
 from .unii_command import UNiiCommand
 from .unii_command_data import (
+    UNiiArmDisarmSection,
+    UNiiArmSectionStatus,
+    UNiiArmState,
     UNiiData,
     UNiiDeviceStatus,
+    UNiiDisarmSectionStatus,
+    UNiiDisarmState,
     UNiiEquipmentInformation,
     UNiiInputArrangement,
     UNiiInputState,
@@ -83,6 +88,14 @@ class UNii(ABC):
                 callback(command, data)
             except Exception as ex:
                 logger.error(ex)
+
+    async def arm_section(self, number: int, code: str) -> bool:
+        """Arm a section."""
+        raise NotImplementedError
+
+    async def disarm_section(self, number: int, code: str) -> bool:
+        """Disarm a section."""
+        raise NotImplementedError
 
 
 class UNiiLocal(UNii):
@@ -346,3 +359,35 @@ class UNiiLocal(UNii):
                     await self._disconnect()
             await asyncio.sleep(1)
         # logger.debug("Poll Alive coroutine stopped")
+
+    async def arm_section(self, number: int, code: str) -> bool:
+        """Arm a section."""
+        response, data = await self._send_receive(
+            UNiiCommand.REQUEST_ARM_SECTION,
+            UNiiArmDisarmSection(code, number),
+            UNiiCommand.RESPONSE_ARM_SECTION,
+        )
+        if response == UNiiCommand.RESPONSE_ARM_SECTION and data.arm_state in [
+            UNiiArmState.SECTION_ARMED,
+            UNiiArmState.NO_CHANGE,
+        ]:
+            return True
+
+        logger.error("Arming failed: %s", data.arm_state)
+        return False
+
+    async def disarm_section(self, number: int, code: str) -> bool:
+        """Disarm a section."""
+        response, data = await self._send_receive(
+            UNiiCommand.REQUEST_DISARM_SECTION,
+            UNiiArmDisarmSection(code, number),
+            UNiiCommand.RESPONSE_DISARM_SECTION,
+        )
+        if response == UNiiCommand.RESPONSE_DISARM_SECTION and data.disarm_state in [
+            UNiiDisarmState.SECTION_DISARMED,
+            UNiiDisarmState.NO_CHANGE,
+        ]:
+            return True
+
+        logger.error("Disarming failed: %s", data.disarm_state)
+        return False

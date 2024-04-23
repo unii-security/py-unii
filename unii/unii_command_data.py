@@ -245,10 +245,29 @@ class UNiiSectionStatus(dict, UNiiData):
         self["armed_state"] = UNiiSectionArmedState(data[1])
 
 
-class UNiiReadyToArmSectionState(UNiiData):
+class UNiiArmDisarmSection(UNiiData, UNiiSendData):
     # pylint: disable=too-few-public-methods
     """
-    UNii Ready To Arm Section State data class
+    This data class containt the request for "Request Arm Section" and "Request Disarm Section"
+    """
+
+    def __init__(self, code, number):
+        self.code = code
+        self.number: int = number
+
+    def to_bytes(self):
+        bytes_ = bytearray()
+        bytes_.append(0x00)
+        bytes_.extend(bcd_encode(self.code))
+        bytes_.extend(self.number.to_bytes(1))
+        bytes_.append(0x01)
+        return bytes(bytes_)
+
+
+class UNiiReadyToArmState(IntEnum):
+    # pylint: disable=too-few-public-methods
+    """
+    The available Ready To Arm states.
     """
 
     NOT_PROGRAMMED: Final = 0
@@ -259,15 +278,25 @@ class UNiiReadyToArmSectionState(UNiiData):
     NOT_AUTHORIZED_TO_ARM: Final = 5
     SYSTEM_ERROR: Final = 6
 
+    def __repr__(self) -> str:
+        return self.name
+
+
+class UNiiReadyToArmSectionStatus(UNiiData):
+    # pylint: disable=too-few-public-methods
+    """
+    UNii Ready To Arm Section State data class
+    """
+
     def __init__(self, data: bytes):
         self.section_number = data[0]
         self.section_state = data[1]
 
 
-class UNiiArmSectionState(IntEnum):
+class UNiiArmState(IntEnum):
     # pylint: disable=too-few-public-methods
     """
-    UNii Arm Section State data class
+    The available Arm states.
     """
 
     NO_CHANGE: Final = 0
@@ -275,17 +304,51 @@ class UNiiArmSectionState(IntEnum):
     ARMING_FAILED_SECTION_NOT_READY: Final = 2
     ARMING_FAILED_NOT_AUTHORIZED: Final = 3
 
+    def __repr__(self) -> str:
+        return self.name
 
-class UNiiDisarmSectionState(IntEnum):
+
+class UNiiArmSectionStatus(UNiiData):
     # pylint: disable=too-few-public-methods
     """
-    UNii Disarm Section State data class
+    UNii Arm Section State data class
+    """
+
+    def __init__(self, data: bytes):
+        self.number = data[0]
+        self.arm_state = UNiiArmState(data[1])
+
+    def __repr__(self) -> str:
+        return str({"number": self.number, "arm_state": self.arm_state})
+
+
+class UNiiDisarmState(IntEnum):
+    # pylint: disable=too-few-public-methods
+    """
+    The available Disarm states.
     """
 
     NO_CHANGE: Final = 0
     SECTION_DISARMED: Final = 1
     DISARMING_FAILED: Final = 2
     DISARMING_FAILED_NOT_AUTHORIZED: Final = 3
+
+    def __repr__(self) -> str:
+        return self.name
+
+
+class UNiiDisarmSectionStatus(UNiiData):
+    # pylint: disable=too-few-public-methods
+    """
+    UNii Disarm Section State data class
+    """
+
+    def __init__(self, data: bytes):
+        self.number = data[0]
+        self.disarm_state = UNiiDisarmState(data[1])
+
+    def __repr__(self) -> str:
+        return str({"number": self.number, "disarm_state": self.disarm_state})
 
 
 # Input related
@@ -681,7 +744,7 @@ class UNiiEventRecord(UNiiData):
         if sia_code != "":
             self.sia_code = SIACode(data[5:7].decode("ascii"))
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return str(
             {
                 "event_number": self.event_number,

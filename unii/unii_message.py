@@ -10,16 +10,16 @@ from Crypto.Cipher import AES
 
 from .unii_command import UNiiCommand
 from .unii_command_data import (
-    UNiiArmSectionState,
+    UNiiArmSectionStatus,
     UNiiData,
     UNiiDeviceStatus,
-    UNiiDisarmSectionState,
+    UNiiDisarmSectionStatus,
     UNiiEquipmentInformation,
     UNiiEventRecord,
     UNiiInputArrangement,
     UNiiInputStatus,
     UNiiRawData,
-    UNiiReadyToArmSectionState,
+    UNiiReadyToArmSectionStatus,
     UNiiResultCode,
     UNiiSectionArrangement,
     UNiiSectionStatus,
@@ -357,11 +357,11 @@ class UNiiResponseMessage(_UNiiMessage):
                     case UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS:
                         data = UNiiSectionStatus(data)
                     case UNiiCommand.RESPONSE_READY_TO_ARM_SECTIONS:
-                        data = UNiiReadyToArmSectionState(data)
+                        data = UNiiReadyToArmSectionStatus(data)
                     case UNiiCommand.RESPONSE_ARM_SECTION:
-                        data = UNiiArmSectionState(data)
+                        data = UNiiArmSectionStatus(data)
                     case UNiiCommand.RESPONSE_DISARM_SECTION:
-                        data = UNiiDisarmSectionState(data)
+                        data = UNiiDisarmSectionStatus(data)
                     # Input related
                     case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                         data = UNiiInputArrangement(data)
