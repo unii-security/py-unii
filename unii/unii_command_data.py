@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 def bit_position_to_numeric(data: bytes) -> [int]:
     """
-    Returns which bits in an aray of bytes are set, LSB first.
+    Returns which bits in an array of bytes are set, LSB first.
 
     00001010 => [2, 4]
     """
@@ -71,7 +71,7 @@ class UNiiData:
     """
     UNii Base data class.
 
-    Alls data classes which are used to send or receive data should inherit from this class.
+    All data classes which are used to send or receive data should inherit from this class.
     """
 
 
@@ -95,7 +95,7 @@ class UNiiRawData(UNiiData, UNiiSendData):
     UNii Raw data class.
 
     This dataclass represents the send or received data as a raw array of binary data and can be
-    used when no other data classes are evailable.
+    used when no other data classes are available.
     """
 
     def __init__(self, raw_data):
@@ -127,7 +127,7 @@ class UNiiEquipmentInformation(UNiiData):
     """
     UNii Equipment Information data class.
 
-    This data class containt the response of the "Request Equipment Information" command.
+    This data class contains the response of the "Request Equipment Information" command.
     """
 
     software_date = None
@@ -164,7 +164,7 @@ class UNiiEquipmentInformation(UNiiData):
 
         if version == 3:
             device_id_length = data[6]
-            self.device_id = int.from_bytes(data[7:7+device_id_length])
+            self.device_id = int.from_bytes(data[7 : 7 + device_id_length])
 
     def __str__(self) -> str:
         return str(
@@ -204,7 +204,7 @@ class UNiiSectionArrangement(dict, UNiiData):
     """
     UNii Section Arrangement data class.
 
-    This data class containt the response of the "Request Section Arrangement" command.
+    This data class contains the response of the "Request Section Arrangement" command.
     """
 
     def __init__(self, data: bytes):
@@ -245,7 +245,7 @@ class UNiiSectionStatus(dict, UNiiData):
     """
     UNii Section Status data class.
 
-    This data class containt the response of the "Request Section Status" command.
+    This data class contains the response of the "Request Section Status" command.
     """
 
     # Get dictionarry keys as attributes.
@@ -259,7 +259,7 @@ class UNiiSectionStatus(dict, UNiiData):
 class UNiiArmDisarmSection(UNiiData, UNiiSendData):
     # pylint: disable=too-few-public-methods
     """
-    This data class containt the request for "Request Arm Section" and "Request Disarm Section"
+    This data class contains the request for "Request Arm Section" and "Request Disarm Section"
     """
 
     def __init__(self, code, number):
@@ -596,7 +596,7 @@ class UNiiDeviceStatus(UNiiData):
     """
     UNii Device Status data class.
 
-    This data class containt the response of the "Request Device Status" command.
+    This data class contains the response of the "Request Device Status" command.
     """
 
     io_devices = []
