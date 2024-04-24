@@ -130,18 +130,25 @@ class UNiiEquipmentInformation(UNiiData):
     This data class containt the response of the "Request Equipment Information" command.
     """
 
+    software_date = None
+    device_id = None
+
     def __init__(self, data: bytes):
         # pylint: disable=consider-using-min-builtin
         # pylint: disable=too-many-locals
         """ """
         # Version
         version = data[1]
-        if version != 2:
+        if version not in [2, 3]:
             raise ValueError()
 
-        self.software_version = data[2:7].decode("ascii")
-        software_date = data[7:19].decode("ascii").strip(string.whitespace + "\x00")
-        self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
+        if version == 2:
+            self.software_version = data[2:7].decode("ascii")
+            software_date = data[7:19].decode("ascii").strip(string.whitespace + "\x00")
+            self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
+        elif version == 3:
+            self.software_version = data[2:19].decode("ascii")
+
         device_name_length = data[19]
         self.device_name = (
             data[20 : 20 + device_name_length]
@@ -153,7 +160,11 @@ class UNiiEquipmentInformation(UNiiData):
         self.max_inputs = int.from_bytes(data[0:2])
         self.max_groups = data[2]
         self.max_sections = data[3]
-        self.max_users = int.from_bytes(data[4:])
+        self.max_users = int.from_bytes(data[4:6])
+
+        if version == 3:
+            device_id_length = data[6]
+            self.device_id = int.from_bytes(data[7:7+device_id_length])
 
     def __str__(self) -> str:
         return str(
