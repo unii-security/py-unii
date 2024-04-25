@@ -251,11 +251,11 @@ class UNiiLocal(UNii):
         return [None, None]
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
-        for section_number, section in data.items():
-            if section_number not in self.inputs:
-                self.sections[section_number] = section
+        for _, section in data.items():
+            if section.number not in self.inputs:
+                self.sections[section.number] = section
             else:
-                self.sections[section_number].update(section)
+                self.sections[section.number].update(section)
 
     def _handle_section_status(self, data: UNiiSectionStatus):
         self.sections[data.number]["armed_state"] = data["armed_state"]
@@ -272,17 +272,17 @@ class UNiiLocal(UNii):
             self._handle_input_status_update(input_status)
 
     def _handle_input_arrangement(self, data: UNiiInputArrangement):
-        for input_number, unii_input in data.items():
+        for _, unii_input in data.items():
             # Expand sections
             for index, section in enumerate(unii_input.sections):
                 unii_input["sections"][index] = self.sections[section]
 
-            if input_number not in self.inputs:
-                self.inputs[input_number] = unii_input
+            if unii_input.number not in self.inputs:
+                self.inputs[unii_input.number] = unii_input
             else:
                 # Retain the input status before updating the input with new data.
-                unii_input.status = self.inputs[input_number].status
-                self.inputs[input_number].update(unii_input)
+                unii_input.status = self.inputs[unii_input.number].status
+                self.inputs[unii_input.number].update(unii_input)
 
     async def _message_received_callback(
         self, tx_sequence: int, command: UNiiCommand, data: UNiiData
