@@ -564,6 +564,25 @@ class UNiiInputStatus(dict, UNiiData):
                 self[input_status.number] = input_status
 
 
+class UNiiInputStatusUpdate(UNiiInputStatusRecord):
+    # pylint: disable=too-few-public-methods
+    """
+    UNii Input Status Update data class.
+    """
+
+    # Get dictionarry keys as attributes.
+    __getattr__ = dict.get
+
+    def __init__(self, data: bytes):
+        # Version
+        version = data[1]
+        if version != 2:
+            raise ValueError()
+
+        number = int.from_bytes(data[2:4])
+        super().__init__(number, data[4])
+
+
 # Device related
 
 

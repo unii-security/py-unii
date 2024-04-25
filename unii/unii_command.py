@@ -50,6 +50,7 @@ class UNiiCommand(IntEnum):
     REQUEST_TO_RESET_ALARM: Final = 0x0122
     RESPONSE_REQUEST_TO_RESET_ALARM: Final = 0x0123
     EXIT_ENTRY_TIMER: Final = 0x0124
+    INPUT_STATUS_UPDATE: Final = 0x0125
 
     # Configuration commands
     REQUEST_SECTION_ARRANGEMENT: Final = 0x0130

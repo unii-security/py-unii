@@ -23,6 +23,7 @@ from .unii_command_data import (
     UNiiInputArrangement,
     UNiiInputState,
     UNiiInputStatus,
+    UNiiInputStatusRecord,
     UNiiRawData,
     UNiiSectionArrangement,
     UNiiSectionStatus,
@@ -259,13 +260,16 @@ class UNiiLocal(UNii):
     def _handle_section_status(self, data: UNiiSectionStatus):
         self.sections[data.number]["armed_state"] = data["armed_state"]
 
+    def _handle_input_status_update(self, input_status: UNiiInputStatusRecord):
+        if input_status.number in self.inputs:
+            self.inputs[input_status.number].update(input_status)
+        elif input_status.status != UNiiInputState.DISABLED:
+            # This should never happen
+            logger.warning("Status for unknown input %i changed", input_status.number)
+
     def _handle_input_status_changed(self, data: UNiiInputStatus):
-        for input_number, input_status in data.items():
-            if input_number in self.inputs:
-                self.inputs[input_number].update(input_status)
-            elif input_status.status != UNiiInputState.DISABLED:
-                # This should never happen
-                logger.warning("Status for unknown input %i changed", input_number)
+        for _, input_status in data.items():
+            self._handle_input_status_update(input_status)
 
     def _handle_input_arrangement(self, data: UNiiInputArrangement):
         for input_number, unii_input in data.items():
@@ -290,7 +294,8 @@ class UNiiLocal(UNii):
                     await self._send(UNiiCommand.RESPONSE_EVENT_OCCURRED, None, False)
             case UNiiCommand.INPUT_STATUS_CHANGED:
                 self._handle_input_status_changed(data)
-                # self.inputs = data
+            case UNiiCommand.INPUT_STATUS_UPDATE:
+                self._handle_input_status_update(data)
             case UNiiCommand.DEVICE_STATUS_CHANGED:
                 self.device_status = data
             case UNiiCommand.RESPONSE_REQUEST_SECTION_ARRANGEMENT:

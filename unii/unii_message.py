@@ -18,6 +18,7 @@ from .unii_command_data import (
     UNiiEventRecord,
     UNiiInputArrangement,
     UNiiInputStatus,
+    UNiiInputStatusUpdate,
     UNiiRawData,
     UNiiReadyToArmSectionStatus,
     UNiiResultCode,
@@ -367,6 +368,8 @@ class UNiiResponseMessage(_UNiiMessage):
                         data = UNiiInputArrangement(data)
                     case UNiiCommand.INPUT_STATUS_CHANGED:
                         data = UNiiInputStatus(data)
+                    case UNiiCommand.INPUT_STATUS_UPDATE:
+                        data = UNiiInputStatusUpdate(data)
                     # Device related
                     case UNiiCommand.DEVICE_STATUS_CHANGED:
                         data = UNiiDeviceStatus(data)
