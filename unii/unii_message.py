@@ -377,6 +377,7 @@ class UNiiResponseMessage(_UNiiMessage):
                         data = UNiiRawData(data)
             except (ValueError, LookupError) as ex:
                 logger.error(ex)
+                logger.debug("Data: 0x%s", data.hex())
                 # Fall back to raw data
                 data = UNiiRawData(data)
         self.data = data
