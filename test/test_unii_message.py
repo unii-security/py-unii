@@ -220,6 +220,27 @@ class Test(unittest.TestCase):
         self.assertEqual(message.data[1].active, True)
         self.assertEqual(message.data[1].name, "Sectie 1")
 
+    def test_response_request_input_arrangement(self):
+        """
+        Test special characters in input name.
+        """
+        # pylint: disable=line-too-long
+        message = UNiiResponseMessage(
+            bytes.fromhex(
+                "3fe151586c9f00007b21050202085a28f03ab0176ace4a6ad46d78ffdfbe3fbb787deb4900641c76fdac26b8dc05f8caadd668b29039a76e284e87d949ce0fa53e899b06ad0aaf66605129521d82c141c67091fb0f48c3cadebc960313ece81fef4772c810d42f7f6d092ffcf04f842ce01f7acb1f3fa529eafc1ec2e1f6502667ea35396df1bfdda867fabe17f6c46cc120e251112c50cbefb33ecd1aa64923116b4eedda480f2120ea8c65d98b68131694c1dffd0060b9ab7845036352a184ec617aa35036e3ef4d0fef1db6710e8322b00b1a90fc576b4c904ac1b9e4e5821df26ab6e6b5c879047a24eeaf12a77acedceaa7d27531572d4fa7d81363795610df521ec62082f78fb77f453978e08d4ee85a9d1528fd79960a600e869f2c041474fdb77ec05dbd207ad73782df904c6c52a03101dbf22117d283936f07dc806090c5e7a1b9e64850a663a5a0585a473ccda610bd09b3dcc5727de5c708cc8166a0b39c89dd578ed88a3393c516bf9ff12c7c8fedab05ce47584dee193e15cb7bac2b31ed7e9c2b9e24cb11c3613b82a191ebf8666c15fd9e947612cc7e09e1abedeaa7fa8b7e56412798c97c3266b2cdebf9808fe65fe58abeca61479cf6bc62ac76e54dee5a9773d128798960352b5cc5fd7dbed0502a852f7576dc6172dcb54a2cb40a65b28c79fbb5c81a255c32f5305e3934b9925a99a584b087bd0c3d60e51eee79541695"
+            ),
+            bytes.fromhex("30313233343536373839616263646566"),
+        )
+        _LOGGER.debug(message)
+        self.assertEqual(message.session_id, 0x3FE1)
+        self.assertEqual(message.tx_sequence, 0x51586C9F)
+        self.assertEqual(message.rx_sequence, 0x00007B21)
+        self.assertEqual(
+            message.command, UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT
+        )
+        self.assertIsNotNone(message.data)
+        self.assertEqual(message.data[1].name, "Ingang 1 é ë ê 1ï  B")
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
