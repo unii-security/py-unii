@@ -143,16 +143,18 @@ class UNiiEquipmentInformation(UNiiData):
             raise ValueError()
 
         if version == 2:
-            self.software_version = data[2:7].decode("ascii")
-            software_date = data[7:19].decode("ascii").strip(string.whitespace + "\x00")
+            self.software_version = data[2:7].decode("utf-8", "replace")
+            software_date = (
+                data[7:19].decode("utf-8", "replace").strip(string.whitespace + "\x00")
+            )
             self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
         elif version == 3:
-            self.software_version = data[2:19].decode("ascii")
+            self.software_version = data[2:19].decode("utf-8", "replace")
 
         device_name_length = data[19]
         self.device_name = (
             data[20 : 20 + device_name_length]
-            .decode("ascii")
+            .decode("utf-8", "replace")
             .strip(string.whitespace + "\x00")
         )
         data = data[20 + device_name_length :]
@@ -193,10 +195,10 @@ class UNiiSection(dict):
 
         self["active"] = data[1] == 1
         if version == 0:
-            name = data[2:19].decode("ascii").strip()
+            name = data[2:19].decode("utf-8", "replace").strip()
         elif version == 1:
             name_length = data[2]
-            name = data[3 : 3 + name_length].decode("ascii")
+            name = data[3 : 3 + name_length].decode("utf-8", "replace")
         self["name"] = name
 
 
@@ -454,7 +456,7 @@ class UNiiInput(dict):
         name = None
         if name_length > 0:
             name = data[5 : 5 + name_length]
-            name = name.decode("ascii")
+            name = name.decode("utf-8", "replace")
         self["name"] = name
         self["sections"] = bit_position_to_numeric(data[5 + name_length :])
         self["status"] = UNiiInputState.DISABLED
@@ -704,7 +706,7 @@ class UNiiEventRecord(UNiiData):
         event_description_length = data[0]
         if event_description_length > 0:
             event_description = data[1 : 1 + event_description_length]
-            self.event_description = event_description.decode("ascii")
+            self.event_description = event_description.decode("utf-8", "replace")
 
         data = data[1 + event_description_length :]
 
@@ -716,7 +718,7 @@ class UNiiEventRecord(UNiiData):
         user_name_length = data[2]
         if user_name_length > 0:
             user_name = data[3 : 3 + user_name_length]
-            self.user_name = user_name.decode("ascii")
+            self.user_name = user_name.decode("utf-8", "replace")
 
         data = data[3 + user_name_length :]
 
@@ -728,7 +730,7 @@ class UNiiEventRecord(UNiiData):
         input_name_length = data[2]
         if input_name_length > 0:
             input_name = data[3 : 3 + input_name_length]
-            self.input_name = input_name.decode("ascii")
+            self.input_name = input_name.decode("utf-8", "replace")
 
         data = data[3 + input_name_length :]
 
@@ -740,7 +742,7 @@ class UNiiEventRecord(UNiiData):
         device_name_length = data[2]
         if device_name_length > 0:
             device_name = data[3 : 3 + device_name_length]
-            self.device_name = device_name.decode("ascii")
+            self.device_name = device_name.decode("utf-8", "replace")
 
         data = data[3 + device_name_length :]
 
@@ -751,9 +753,9 @@ class UNiiEventRecord(UNiiData):
         self.sections = bit_position_to_numeric(data[1:5])
 
         # SIA Code
-        sia_code = data[5:7].decode("ascii").strip()
+        sia_code = data[5:7].decode("utf-8", "replace").strip()
         if sia_code != "":
-            self.sia_code = SIACode(data[5:7].decode("ascii"))
+            self.sia_code = SIACode(data[5:7].decode("utf-8", "replace"))
 
     def __repr__(self) -> str:
         return str(
