@@ -166,13 +166,17 @@ class UNiiLocal(UNii):
                     False,
                 )
 
-            for i in range(1, 15):
-                await self._send_receive(
+            block = 0
+            while True:
+                block += 1
+                _, data = await self._send_receive(
                     UNiiCommand.REQUEST_INPUT_ARRANGEMENT,
-                    UNiiRawData(i.to_bytes(2)),
+                    UNiiRawData(block.to_bytes(2)),
                     UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
                     False,
                 )
+                if data is None:
+                    break
 
             await self._send_receive(
                 UNiiCommand.REQUEST_INPUT_STATUS,
@@ -296,6 +300,8 @@ class UNiiLocal(UNii):
             self._handle_input_status_update(input_status)
 
     def _handle_input_arrangement(self, data: UNiiInputArrangement):
+        if data is None:
+            return
         for _, unii_input in data.items():
             # Expand sections
             for index, section in enumerate(unii_input.sections):
