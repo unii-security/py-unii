@@ -432,5 +432,8 @@ class UNiiLocal(UNii):
         ]:
             return True
 
-        logger.error("Disarming failed: %s", data.disarm_state)
+        if data is not None:
+            logger.error("Disarming failed: %s", data.disarm_state)
+        else:
+            logger.error("Disarming failed")
         return False
