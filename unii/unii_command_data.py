@@ -265,6 +265,9 @@ class UNiiSectionArmedState(IntEnum):
     def __repr__(self) -> str:
         return self.name
 
+    def __str__(self) -> str:
+        return self.name.lower()
+
 
 class UNiiSectionStatus(dict, UNiiData):
     """
@@ -317,6 +320,9 @@ class UNiiReadyToArmState(IntEnum):
     def __repr__(self) -> str:
         return self.name
 
+    def __str__(self) -> str:
+        return self.name.lower()
+
 
 class UNiiReadyToArmSectionStatus(UNiiData):
     # pylint: disable=too-few-public-methods
@@ -342,6 +348,9 @@ class UNiiArmState(IntEnum):
 
     def __repr__(self) -> str:
         return self.name
+
+    def __str__(self) -> str:
+        return self.name.lower()
 
 
 class UNiiArmSectionStatus(UNiiData):
@@ -371,6 +380,9 @@ class UNiiDisarmState(IntEnum):
 
     def __repr__(self) -> str:
         return self.name
+
+    def __str__(self) -> str:
+        return self.name.lower()
 
 
 class UNiiDisarmSectionStatus(UNiiData):
@@ -405,6 +417,9 @@ class UNiiInputType(IntEnum):
     def __repr__(self) -> str:
         return self.name
 
+    def __str__(self) -> str:
+        return self.name.lower()
+
 
 class UNiiSensorType(IntEnum):
     """
@@ -431,6 +446,9 @@ class UNiiSensorType(IntEnum):
     def __repr__(self) -> str:
         return self.name
 
+    def __str__(self) -> str:
+        return self.name.lower()
+
 
 class UNiiReaction(IntEnum):
     """
@@ -446,6 +464,9 @@ class UNiiReaction(IntEnum):
 
     def __repr__(self) -> str:
         return self.name
+
+    def __str__(self) -> str:
+        return self.name.lower()
 
 
 class UNiiInput(dict):
@@ -533,6 +554,9 @@ class UNiiInputState(IntEnum):
 
     def __repr__(self) -> str:
         return self.name
+
+    def __str__(self) -> str:
+        return self.name.lower()
 
 
 class UNiiInputStatusRecord(dict):
