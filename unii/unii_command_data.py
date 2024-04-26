@@ -66,6 +66,7 @@ def bcd_encode(data: bytes) -> bytes:
 
 
 def decode_and_strip(data: bytes):
+    """Decode a byte array to UTF-8 and strip all leading and trailing whitespace and \x00."""
     return data.decode("utf-8", "replace").strip(string.whitespace + "\x00")
 
 
@@ -150,6 +151,7 @@ class UNiiResultCode(UNiiData):
 # Equipment related
 class UNiiEquipmentInformation(UNiiData):
     # pylint: disable=too-few-public-methods
+    # pylint: disable=too-many-instance-attributes
     """
     UNii Equipment Information data class.
 
