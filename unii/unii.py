@@ -7,8 +7,11 @@ import logging
 import time
 from abc import ABC
 from datetime import datetime, timedelta
+from enum import IntFlag, auto
 from threading import Lock
 from typing import Final
+
+import semver
 
 from .unii_command import UNiiCommand
 from .unii_command_data import (
@@ -40,6 +43,17 @@ logger = logging.getLogger(__name__)
 _POLL_ALIVE_INTERVAL: Final = timedelta(seconds=30)
 
 
+class UNiiFeature(IntFlag):
+    ARM_SECTION: Final = auto()
+    BYPASS_ZONE: Final = auto()
+    SET_OUTPUT: Final = auto()
+    RESET_ALARM: Final = auto()
+    WRITE_USER_RECORD: Final = auto()
+    WRITE_TAG_RECORD: Final = auto()
+    WRITE_ZONE_RECORD: Final = auto()
+    WRITE_INPUT_RECORD: Final = auto()
+
+
 class UNii(ABC):
     """
     UNii base class for interfacing with Alphatronics UNii security systems.
@@ -55,6 +69,8 @@ class UNii(ABC):
     device_status: UNiiDeviceStatus = None
 
     connection: UNiiConnection = None
+
+    features = []
 
     _event_occurred_callbacks = []
 
@@ -250,6 +266,17 @@ class UNiiLocal(UNii):
             return await self._get_received_message(tx_sequence, expected_response)
         return [None, None]
 
+    def _handle_equipment_information(self, data: UNiiEquipmentInformation):
+        self.equipment_information = data
+
+        # Get capabilities based on firmware version number
+        software_version = (
+            self.equipment_information.software_version.finalize_version()
+        )
+        # Arming sections not yet fully supported in the library, so disabled for now
+        # if software_version.match(">=2.17.0"):
+        #     self.features.append(UNiiFeature.ARM_SECTION)
+
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
             if section.number not in self.inputs:
@@ -305,7 +332,7 @@ class UNiiLocal(UNii):
             case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                 self._handle_input_arrangement(data)
             case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
-                self.equipment_information = data
+                self._handle_equipment_information(data)
 
         if tx_sequence in self._waiting_for_message and self._waiting_for_message[
             tx_sequence

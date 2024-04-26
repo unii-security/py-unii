@@ -19,7 +19,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-	"pycryptodome>=3.6.6"
+	"pycryptodome>=3.6.6",
+	"semver>=3.0.2"
 ]
 
 [project.urls]
