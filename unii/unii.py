@@ -42,7 +42,7 @@ _POLL_ALIVE_INTERVAL: Final = timedelta(seconds=30)
 
 
 class UNiiFeature(IntFlag):
-    """Feautures implemented by the UNii library."""
+    """Features implemented by the UNii library."""
 
     ARM_SECTION: Final = auto()
     BYPASS_ZONE: Final = auto()
