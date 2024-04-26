@@ -8,6 +8,7 @@ from abc import abstractmethod
 from datetime import datetime
 from enum import IntEnum, IntFlag, auto
 from typing import Final
+
 import semver
 
 from .sia_code import SIACode
@@ -63,8 +64,10 @@ def bcd_encode(data: bytes) -> bytes:
     #
     # return bcd_bytes
 
+
 def decode_and_strip(data: bytes):
     return data.decode("utf-8", "replace").strip(string.whitespace + "\x00")
+
 
 # Generic command data classes
 
@@ -721,7 +724,9 @@ class UNiiEventRecord(UNiiData):
         # Description
         event_description_length = data[0]
         if event_description_length > 0:
-            self.event_description = decode_and_strip(data[1 : 1 + event_description_length])
+            self.event_description = decode_and_strip(
+                data[1 : 1 + event_description_length]
+            )
 
         data = data[1 + event_description_length :]
 
