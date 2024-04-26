@@ -188,8 +188,8 @@ class UNiiEquipmentInformation(UNiiData):
         self.max_users = int.from_bytes(data[4:6])
 
         if version == 3:
-            device_id_length = data[6]
-            self.device_id = int.from_bytes(data[7 : 7 + device_id_length])
+            device_number_length = data[6]
+            self.device_id = int.from_bytes(data[7 : 7 + device_number_length])
 
     def __str__(self) -> str:
         return str(
@@ -695,13 +695,13 @@ class UNiiEventRecord(UNiiData):
     # pylint: disable=too-many-instance-attributes
 
     event_description: str = None
-    user_id: int = None
+    user_number: int = None
     user_name: str = None
-    input_id: int = None
+    input_number: int = None
     input_name: str = None
-    device_id: int = None
+    device_number: int = None
     device_name: str = None
-    bus_id: int = None
+    bus_number: int = None
     sections: [] = None
     sia_code: SIACode = None
 
@@ -738,9 +738,9 @@ class UNiiEventRecord(UNiiData):
         data = data[1 + event_description_length :]
 
         # User
-        user_id = int.from_bytes(data[0:2])
-        if user_id > 0:
-            self.user_id = user_id
+        user_number = int.from_bytes(data[0:2])
+        if user_number > 0:
+            self.user_number = user_number
 
         user_name_length = data[2]
         if user_name_length > 0:
@@ -749,9 +749,9 @@ class UNiiEventRecord(UNiiData):
         data = data[3 + user_name_length :]
 
         # Input
-        input_id = int.from_bytes(data[0:2])
-        if input_id > 0:
-            self.input_id = input_id
+        input_number = int.from_bytes(data[0:2])
+        if input_number > 0:
+            self.input_number = input_number
 
         input_name_length = data[2]
         if input_name_length > 0:
@@ -760,9 +760,9 @@ class UNiiEventRecord(UNiiData):
         data = data[3 + input_name_length :]
 
         # Device
-        device_id = int.from_bytes(data[0:2])
-        if device_id > 0:
-            self.device_id = device_id
+        device_number = int.from_bytes(data[0:2])
+        if device_number > 0:
+            self.device_number = device_number
 
         device_name_length = data[2]
         if device_name_length > 0:
@@ -771,7 +771,7 @@ class UNiiEventRecord(UNiiData):
         data = data[3 + device_name_length :]
 
         # Bus
-        self.bus_id = data[0]
+        self.bus_number = data[0]
 
         # Sections
         self.sections = bit_position_to_numeric(data[1:5])
@@ -787,13 +787,13 @@ class UNiiEventRecord(UNiiData):
                 "event_number": self.event_number,
                 "timestamp": str(self.timestamp),
                 "event_description": self.event_description,
-                "user_id": self.user_id,
+                "user_number": self.user_number,
                 "user_name": self.user_name,
-                "input_id": self.input_id,
+                "input_number": self.input_number,
                 "input_name": self.input_name,
-                "device_id": self.device_id,
+                "device_number": self.device_number,
                 "device_name": self.device_name,
-                "bus_id": self.bus_id,
+                "bus_number": self.bus_number,
                 "sections": self.sections,
                 "sia_code": self.sia_code,
             }

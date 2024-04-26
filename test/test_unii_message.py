@@ -121,7 +121,7 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Sabotage schakelaar alarm")
-        self.assertEqual(message.data.device_id, 5016)
+        self.assertEqual(message.data.device_number, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
         self.assertEqual(message.data.sia_code, SIACode.TAMPER)
 
@@ -140,7 +140,7 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Sabotage schakelaar herstel")
-        self.assertEqual(message.data.device_id, 5016)
+        self.assertEqual(message.data.device_number, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
         self.assertEqual(message.data.sia_code, SIACode.TAMPER_RESTORAL)
 
@@ -159,7 +159,7 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Communicatie fout")
-        self.assertEqual(message.data.device_id, 5016)
+        self.assertEqual(message.data.device_number, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
         self.assertEqual(message.data.sia_code, SIACode.TAMPER)
 
@@ -178,7 +178,7 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Communicatie herstel")
-        self.assertEqual(message.data.device_id, 5016)
+        self.assertEqual(message.data.device_number, 5016)
         self.assertEqual(message.data.device_name, "UNii keypad 1")
         self.assertEqual(message.data.sia_code, SIACode.TAMPER_RESTORAL)
 
@@ -197,7 +197,7 @@ class Test(unittest.TestCase):
         self.assertEqual(message.command, UNiiCommand.EVENT_OCCURRED)
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data.event_description, "Config gewijzigd op afstand")
-        self.assertEqual(message.data.device_id, 5000)
+        self.assertEqual(message.data.device_number, 5000)
         self.assertEqual(message.data.device_name, "UNii centrale")
         self.assertEqual(message.data.sia_code, SIACode.REMOTE_PROGRAM_SUCCESS)
 
