@@ -11,8 +11,6 @@ from enum import IntFlag, auto
 from threading import Lock
 from typing import Final
 
-import semver
-
 from .unii_command import UNiiCommand
 from .unii_command_data import (
     UNiiArmDisarmSection,
@@ -44,6 +42,7 @@ _POLL_ALIVE_INTERVAL: Final = timedelta(seconds=30)
 
 
 class UNiiFeature(IntFlag):
+    """Feautures implemented by the UNii library."""
     ARM_SECTION: Final = auto()
     BYPASS_ZONE: Final = auto()
     SET_OUTPUT: Final = auto()
