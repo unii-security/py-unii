@@ -8,6 +8,7 @@ from abc import abstractmethod
 from datetime import datetime
 from enum import IntEnum, IntFlag, auto
 from typing import Final
+import semver
 
 from .sia_code import SIACode
 
@@ -145,11 +146,12 @@ class UNiiEquipmentInformation(UNiiData):
             raise ValueError()
 
         if version == 2:
-            self.software_version = decode_and_strip(data[2:7])
+            software_version = decode_and_strip(data[2:7])
             software_date = decode_and_strip(data[7:19])
             self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
         elif version == 3:
-            self.software_version = decode_and_strip(data[2:19])
+            software_version = decode_and_strip(data[2:19])
+        self.software_version = semver.Version.parse(software_version)
 
         device_name_length = data[19]
         self.device_name = decode_and_strip(data[20 : 20 + device_name_length])
