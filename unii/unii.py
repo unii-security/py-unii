@@ -284,8 +284,12 @@ class UNiiLocal(UNii):
             else:
                 self.sections[section.number].update(section)
 
-    def _handle_section_status(self, data: UNiiSectionStatus):
-        self.sections[data.number]["armed_state"] = data["armed_state"]
+    def _handle_section_status(self, section_status: UNiiSectionStatus):
+        if section_status.number in self.sections:
+            self.sections[section_status.number]["armed_state"] = section_status["armed_state"]
+        else:
+            # This should never happen
+            logger.warning("Status for unknown section %i changed", section_status.number)
 
     def _handle_input_status_update(self, input_status: UNiiInputStatusRecord):
         if input_status.number in self.inputs:
