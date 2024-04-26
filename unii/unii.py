@@ -47,11 +47,6 @@ class UNiiFeature(IntFlag):
     ARM_SECTION: Final = auto()
     BYPASS_ZONE: Final = auto()
     SET_OUTPUT: Final = auto()
-    RESET_ALARM: Final = auto()
-    WRITE_USER_RECORD: Final = auto()
-    WRITE_TAG_RECORD: Final = auto()
-    WRITE_ZONE_RECORD: Final = auto()
-    WRITE_INPUT_RECORD: Final = auto()
 
 
 class UNii(ABC):
@@ -270,12 +265,14 @@ class UNiiLocal(UNii):
         self.equipment_information = data
 
         # Get capabilities based on firmware version number
-        software_version = (
-            self.equipment_information.software_version.finalize_version()
-        )
-        # Arming sections not yet fully supported in the library, so disabled for now
+        # Library is currently read-only, so disabled for now
+        # software_version = (
+        #     self.equipment_information.software_version.finalize_version()
+        # )
         # if software_version.match(">=2.17.0"):
         #     self.features.append(UNiiFeature.ARM_SECTION)
+        #     self.features.append(UNiiFeature.BYPASS_ZONE)
+        #     self.features.append(UNiiFeature.SET_OUTPUT)
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
