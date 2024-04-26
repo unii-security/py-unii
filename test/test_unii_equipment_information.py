@@ -43,6 +43,7 @@ class Test(unittest.TestCase):
         """
         Test connecting to Alphatronics UNii.
         """
+        await asyncio.sleep(1)
         try:
             result = await self._unii.connect()
             self.assertTrue(result, "Failed to connect to UNii")
