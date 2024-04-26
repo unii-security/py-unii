@@ -69,6 +69,26 @@ def decode_and_strip(data: bytes):
     return data.decode("utf-8", "replace").strip(string.whitespace + "\x00")
 
 
+def translate_input_number(input_number: int):
+    """Translate input number according to Apendix 4 of the UNii API."""
+    if input_number <= 511:
+        return input_number + 1
+    if 512 <= input_number <= 543:
+        return input_number + 189
+    # if 544 <= input_number <= 575:
+    #     return -1
+    if 576 <= input_number <= 639:
+        return input_number + 25
+    if 640 <= input_number <= 688:
+        return input_number + 161
+    # if 689 <= input_number <= 705:
+    #     return -1
+    if 706 <= input_number <= 962:
+        return input_number + 295
+
+    return -1
+
+
 # Generic command data classes
 
 
@@ -521,24 +541,7 @@ class UNiiInputStatusRecord(dict):
     # Get dictionarry keys as attributes.
     __getattr__ = dict.get
 
-    def __init__(self, index: int, data: int):
-        input_number = index
-        if index <= 511:
-            input_number += 1
-        elif 512 <= index <= 543:
-            input_number += 189
-        elif 544 <= index <= 575:
-            input_number = -1
-        elif 576 <= index <= 639:
-            input_number += 25
-        elif 640 <= index <= 688:
-            input_number += 161
-        elif 689 <= index <= 705:
-            input_number = -1
-        elif 706 <= index <= 962:
-            input_number += 295
-
-        self["number"] = input_number
+    def __init__(self, data: int):
         self["status"] = UNiiInputState(data & 0x0F)
         self["bypassed"] = data & 0b00010000 == 0b00010000
         self["alarm_memorized"] = data & 0b00100000 == 0b00100000
@@ -559,7 +562,9 @@ class UNiiInputStatus(dict, UNiiData):
             raise ValueError()
 
         for index, input_status in enumerate(data[2:]):
-            input_status = UNiiInputStatusRecord(index, input_status)
+            input_status = UNiiInputStatusRecord(input_status)
+            input_status["number"] = translate_input_number(index)
+
             if input_status.number >= 0:
                 self[input_status.number] = input_status
 
@@ -579,8 +584,8 @@ class UNiiInputStatusUpdate(UNiiInputStatusRecord):
         if version != 2:
             raise ValueError()
 
-        number = int.from_bytes(data[2:4])
-        super().__init__(number, data[4])
+        super().__init__(data[4])
+        self["number"] = int.from_bytes(data[2:4])
 
 
 # Device related
