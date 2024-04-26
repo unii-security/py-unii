@@ -381,8 +381,12 @@ class UNiiResponseMessage(_UNiiMessage):
             except (ValueError, LookupError) as ex:
                 logger.error(ex)
                 logger.debug("Data: 0x%s", data.hex())
-                # Fall back to raw data
-                data = UNiiRawData(data)
+                data = None
+            # Catch all exceptions while in development, to be removed once stable.
+            except Exception as ex:
+                logger.error(ex)
+                logger.debug("Data: 0x%s", data.hex())
+                data = None
         self.data = data
 
     def _decrypt(self, shared_key: bytes, initial_value: bytes, payload: bytes):
