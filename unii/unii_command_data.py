@@ -71,7 +71,7 @@ def decode_and_strip(data: bytes):
 
 
 def translate_input_number(input_number: int):
-    """Translate input number according to Apendix 4 of the UNii API."""
+    """Translate input number according to Appendix 4 of the UNii API."""
     if input_number <= 511:
         return input_number + 1
     if 512 <= input_number <= 543:
