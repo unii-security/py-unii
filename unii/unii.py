@@ -101,6 +101,7 @@ class UNii(ABC):
         for callback in self._event_occurred_callbacks:
             try:
                 callback(command, data)
+            # pylint: disable=broad-exception-caught
             except Exception as ex:
                 logger.error(ex)
 
