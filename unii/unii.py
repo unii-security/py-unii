@@ -150,12 +150,19 @@ class UNiiLocal(UNii):
             False,
         )
         if response == UNiiCommand.CONNECTION_REQUEST_RESPONSE:
-            await self._send_receive(
+            response, data = await self._send_receive(
                 UNiiCommand.REQUEST_EQUIPMENT_INFORMATION,
                 None,
                 UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION,
                 False,
             )
+            if (
+                response is None
+                or data is None
+                or response != UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION
+            ):
+                self._disconnect()
+                return False
 
             await self._send_receive(
                 UNiiCommand.REQUEST_SECTION_ARRANGEMENT,
