@@ -225,7 +225,7 @@ class UNiiTCPConnection(UNiiConnection):
                 self.last_message_received = datetime.now()
                 # logger.debug("Last message received: %s", self.last_message_sent)
                 if message.rx_sequence != self._tx_sequence:
-                    logger.error(
+                    logger.warning(
                         "Invalid sequence number. Expected %i, received %i.",
                         self._tx_sequence,
                         message.rx_sequence,
