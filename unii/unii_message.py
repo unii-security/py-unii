@@ -143,7 +143,6 @@ class _UNiiMessage:
         return crc
 
     def __str__(self) -> str:
-        # return "0x" + self._raw_message.hex()
         return str(
             {
                 "session_id": self.session_id,
@@ -279,14 +278,10 @@ class UNiiResponseMessage(_UNiiMessage):
     UNii Message class for receiving
     """
 
-    _raw_message: bytes | None = None
-
     def __init__(self, message: bytes, shared_key: bytes | None = None):
         # pylint: disable=too-many-statements
         """ """
         assert message is not None
-
-        self._raw_message = message
 
         # First 14 bytes Header
         header = message[:14]
