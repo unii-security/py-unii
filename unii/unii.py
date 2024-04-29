@@ -198,25 +198,21 @@ class UNiiLocal(UNii):
                 False,
             )
 
-            if self.equipment_information is not None:
-                try:
-                    software_version = (
-                        self.equipment_information.software_version.finalize_version()
+            software_version = (
+                self.equipment_information.software_version.finalize_version()
+            )
+            if software_version.match(">=2.17.0"):
+                block = 0
+                while True:
+                    block += 1
+                    _, data = await self._send_receive(
+                        UNiiCommand.REQUEST_OUTPUT_ARRANGEMENT,
+                        UNiiRawData(block.to_bytes(2)),
+                        UNiiCommand.RESPONSE_REQUEST_OUTPUT_ARRANGEMENT,
+                        False,
                     )
-                    if software_version.match(">=2.17.0"):
-                        block = 0
-                        while True:
-                            block += 1
-                            _, data = await self._send_receive(
-                                UNiiCommand.REQUEST_OUTPUT_ARRANGEMENT,
-                                UNiiRawData(block.to_bytes(2)),
-                                UNiiCommand.RESPONSE_REQUEST_OUTPUT_ARRANGEMENT,
-                                False,
-                            )
-                            if data is None:
-                                break
-                except ValueError as ex:
-                    logger.warning(ex)
+                    if data is None:
+                        break
 
             await self._send_receive(
                 UNiiCommand.REQUEST_DEVICE_STATUS,
@@ -304,17 +300,13 @@ class UNiiLocal(UNii):
 
         # Get capabilities based on firmware version number
         # Library is currently read-only, so disabled for now
-        # if self.equipment_information is not None:
-        #     try:
-        #         software_version = (
-        #             self.equipment_information.software_version.finalize_version()
-        #         )
-        #         if software_version.match(">=2.17.0"):
-        #             self.features.append(UNiiFeature.ARM_SECTION)
-        #             self.features.append(UNiiFeature.BYPASS_ZONE)
-        #             self.features.append(UNiiFeature.SET_OUTPUT)
-        #     except ValueError as ex:
-        #         logger.warning(ex)
+        # software_version = (
+        #     self.equipment_information.software_version.finalize_version()
+        # )
+        # if software_version.match(">=2.17.0"):
+        #     self.features.append(UNiiFeature.ARM_SECTION)
+        #     self.features.append(UNiiFeature.BYPASS_ZONE)
+        #     self.features.append(UNiiFeature.SET_OUTPUT)
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():

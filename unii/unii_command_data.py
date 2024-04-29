@@ -177,11 +177,22 @@ class UNiiEquipmentInformation(UNiiData):
 
         if version == 2:
             software_version = decode_and_strip(data[2:7])
+            # The software version can be truncated, to make it a vallid SemVer add 0 if the
+            # software version ends with .
+            if software_version.endswith("."):
+                software_version += "0"
+
             software_date = decode_and_strip(data[7:19])
             self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
         elif version == 3:
             software_version = decode_and_strip(data[2:19])
-        self.software_version = semver.Version.parse(software_version)
+
+        try:
+            self.software_version = semver.Version.parse(software_version)
+        except ValueError as ex:
+            # Fall back to version 0.0.0 when SemVer can not be parsed.
+            self.software_version = semver.Version(0, 0, 0)
+            logger.warning(ex)
 
         device_name_length = data[19]
         self.device_name = decode_and_strip(data[20 : 20 + device_name_length])
