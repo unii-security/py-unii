@@ -105,7 +105,7 @@ class UNii(ABC):
                 callback(command, data)
             # pylint: disable=broad-exception-caught
             except Exception as ex:
-                logger.error(ex)
+                logger.error("Exception in Event Occurred Callback: %s", ex)
 
     async def arm_section(self, number: int, code: str) -> bool:
         """Arm a section."""
