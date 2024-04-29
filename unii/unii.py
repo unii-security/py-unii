@@ -26,6 +26,7 @@ from .unii_command_data import (
     UNiiInputState,
     UNiiInputStatus,
     UNiiInputStatusRecord,
+    UNiiOutput,
     UNiiRawData,
     UNiiSection,
     UNiiSectionArrangement,
@@ -64,6 +65,7 @@ class UNii(ABC):
     equipment_information: UNiiEquipmentInformation | None = None
     sections: dict[int, UNiiSection] = {}
     inputs: dict[int, UNiiInput] = {}
+    outputs: dict[int, UNiiOutput] = {}
     device_status: UNiiDeviceStatus | None = None
 
     connection: UNiiConnection
@@ -188,6 +190,23 @@ class UNiiLocal(UNii):
                 UNiiCommand.INPUT_STATUS_CHANGED,
                 False,
             )
+
+            software_version = (
+                self.equipment_information.software_version.finalize_version()
+            )
+            if software_version.match(">=2.17.0"):
+                block = 0
+                while True:
+                    block += 1
+                    _, data = await self._send_receive(
+                        UNiiCommand.REQUEST_OUTPUT_ARRANGEMENT,
+                        UNiiRawData(block.to_bytes(2)),
+                        UNiiCommand.RESPONSE_REQUEST_OUTPUT_ARRANGEMENT,
+                        False,
+                    )
+                    if data is None:
+                        break
+
             await self._send_receive(
                 UNiiCommand.REQUEST_DEVICE_STATUS,
                 None,

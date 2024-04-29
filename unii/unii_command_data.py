@@ -619,6 +619,78 @@ class UNiiInputStatusUpdate(UNiiInputStatusRecord, UNiiData):
         self["number"] = int.from_bytes(data[2:4])
 
 
+# Output related
+
+
+class UNiiOutputType(IntEnum):
+    """
+    The available output types.
+    """
+
+    NOT_ACTIVE: Final = 0
+    DIRECT: Final = 1
+    TIMED: Final = 2
+    FOLLOW_INPUT: Final = 3
+
+
+class UNiiOutput(dict):
+    """
+    UNii Output.
+    """
+
+    # Get dictionarry keys as attributes.
+    __getattr__ = dict.get
+
+    def __init__(self, data: bytes):
+        output_number = int.from_bytes(data[0:2])
+        self["number"] = output_number
+
+        self["type"] = UNiiOutputType(data[2])
+
+        name_length = data[3]
+        name = None
+        if name_length > 0:
+            name = decode_and_strip(data[4 : 4 + name_length])
+        self["name"] = name
+        self["sections"] = bit_position_to_numeric(data[5 + name_length :])
+
+
+class UNiiOutputArrangement(dict, UNiiData):
+    # pylint: disable=too-few-public-methods
+    """
+    UNii Output Arrangement data class.
+
+    This data class contains the response of the "Request Output Arrangement" command.
+    """
+
+    def __init__(self, data: bytes):
+        """ """
+        # Version
+        version = data[1]
+        if version != 1:
+            raise ValueError()
+
+        # Block Number
+        block_number = int.from_bytes(data[2:4])
+
+        if block_number == 0xFFFF:
+            raise ValueError()
+
+        self.block_number = block_number
+
+        offset = 4
+        while offset < len(data):
+            name_length = data[3 + offset]
+            output_information = data[offset : 8 + offset + name_length]
+            output_information = UNiiOutput(output_information)
+            self[output_information.number] = output_information
+
+            offset += 8 + name_length
+
+    def __str__(self) -> str:
+        return str({"block_number": self.block_number, "inputs": super().__str__()})
+
+
 # Device related
 
 

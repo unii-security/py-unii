@@ -241,6 +241,16 @@ class Test(unittest.TestCase):
         self.assertIsNotNone(message.data)
         self.assertEqual(message.data[1].name, "Ingang 1 é ë ê 1ï  B")
 
+    def test_response_request_output_arrangement(self):
+        # pylint: disable=line-too-long
+        message = UNiiResponseMessage(
+            bytes.fromhex(
+                "03a7155e79ad000093570502017d63849572e1395027d3310f4f6bdecb825097a6c2a28a03aad4a22985b0672d96513e390ab0c510e4875d00c875079f2a9d45cd6183f6ec632a57639336f7bfcb84074321c3cdff270347516063d03c6d4e8ae2e548e31d5726cc44d3361dea3075ec2ce2b826a8083778e1b95d244e7861b6f0abcbc24cdef47dc1f65a0f426fbf287090280eaf91ad21c54ebac2442b2827c805a37b3e4acd90431e4ab159be08ae713b873fe7c0c83b5c795f08543ee7d9439e3b7bebe9e66f0b3fea9aa9e0ac023e1da64c1a95a71ac93e82a4a78dc7b29f5325a3ccfc2f5420167ac4c4c0c344da7d05a202f921fb9491e155a822f891acb046eabb323459393e1e2b1746ca4bf1d9f93097d1560dd50eed4870d135f5e695e83b850a1e0cfe9685e90ace419a656668e07405a7e28d190014ade143328f8ad956f76a10bda1e078ec171f591bb102174f8945b62e0ba8beef85a8207bb5b1f9b6e486f5c1ecbbdf5686b34041b97e7a1a9afcab54cec4b9c9b6"
+            ),
+            bytes.fromhex("31323334353637383930616263646566"),
+        )
+        _LOGGER.debug(message)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
