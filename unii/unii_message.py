@@ -380,13 +380,13 @@ class UNiiResponseMessage(_UNiiMessage):
                         data = UNiiRawData(data)
             except (ValueError, LookupError) as ex:
                 logger.error(ex)
-                logger.debug("Data: 0x%s", data.hex())
+                logger.debug("Payload: 0x%s", payload.hex())
                 data = None
             # Catch all exceptions while in development, to be removed once stable.
             # pylint: disable=broad-exception-caught
             except Exception as ex:
                 logger.error(ex)
-                logger.debug("Data: 0x%s", data.hex())
+                logger.debug("Payload: 0x%s", payload.hex())
                 data = None
         self.data = data
 

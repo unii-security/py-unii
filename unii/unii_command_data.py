@@ -173,7 +173,7 @@ class UNiiEquipmentInformation(UNiiData):
         # Version
         version = data[1]
         if version not in [2, 3]:
-            raise ValueError()
+            raise ValueError("Invalid message version")
 
         if version == 2:
             software_version = decode_and_strip(data[2:7])
@@ -219,7 +219,7 @@ class UNiiSection(dict):
         # Version
         version = data[0]
         if version not in [0, 1]:
-            raise ValueError()
+            raise ValueError("Invalid message version")
 
         self["active"] = data[1] == 1
         if version == 0:
@@ -244,7 +244,7 @@ class UNiiSectionArrangement(dict, UNiiData):
             # Version
             version = data[0 + offset]
             if version not in [0, 1]:
-                raise ValueError()
+                raise ValueError("Invalid message version")
 
             section_length = 19
             if version == 1:
@@ -523,13 +523,13 @@ class UNiiInputArrangement(dict, UNiiData):
         # Version
         version = data[1]
         if version != 2:
-            raise ValueError()
+            raise ValueError("Invalid message version")
 
         # Block Number
         block_number = int.from_bytes(data[2:4])
 
         if block_number == 0xFFFF:
-            raise ValueError()
+            raise ValueError("Invalid block number")
 
         self.block_number = block_number
 
@@ -668,7 +668,7 @@ class UNiiOutputArrangement(dict, UNiiData):
         # Version
         version = data[1]
         if version != 1:
-            raise ValueError()
+            raise ValueError("Invalid message version")
 
         # Block Number
         block_number = int.from_bytes(data[2:4])
@@ -737,7 +737,7 @@ class UNiiDeviceStatus(UNiiData):
         # Version
         version = data[1]
         if version != 2:
-            raise ValueError()
+            raise ValueError("Invalid message version")
 
         # Split data in chunks of 2 bytes
         chunks = [data[pos : pos + 2] for pos in range(2, len(data), 2)]
@@ -813,7 +813,7 @@ class UNiiEventRecord(UNiiData):
         # Version
         version = data[1]
         if version != 3:
-            raise ValueError()
+            raise ValueError("Invalid message version")
 
         # Event Number
         self.event_number = int.from_bytes(data[2:4])
