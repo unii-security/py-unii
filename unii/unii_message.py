@@ -119,11 +119,11 @@ class _UNiiMessage:
     _CRC16_REFOUT: Final = False
     _CRC16_XOROUT: Final = 0x0000
 
-    session_id: int = None
-    tx_sequence: int = None
-    rx_sequence: int = None
-    command: UNiiCommand = None
-    data: UNiiData = None
+    session_id: int | None = None
+    tx_sequence: int | None = None
+    rx_sequence: int | None = None
+    command: UNiiCommand | None = None
+    data: UNiiData | None = None
 
     def _calculate_crc16(self, message: bytes) -> int:
         """
@@ -162,10 +162,10 @@ class UNiiRequestMessage(_UNiiMessage):
     All numbers are exchanged in big endian order (Most significant byte first)
     """
 
-    _protocol_id: UNiiProtocolID = None
+    _protocol_id: UNiiProtocolID | None = None
 
     @property
-    def packet_type(self) -> UNiiPacketType:
+    def packet_type(self) -> UNiiPacketType | None:
         """
         Get packet type based on command
         """
@@ -221,7 +221,7 @@ class UNiiRequestMessage(_UNiiMessage):
 
         return payload
 
-    def to_bytes(self, shared_key: bytes = None) -> bytes:
+    def to_bytes(self, shared_key: bytes | None = None) -> bytes:
         """
         Converts the UNii Message to a sequence of bytes
         """
@@ -279,9 +279,10 @@ class UNiiResponseMessage(_UNiiMessage):
     UNii Message class for receiving
     """
 
-    _raw_message: bytes = None
+    _raw_message: bytes | None = None
 
-    def __init__(self, message: bytes, shared_key: bytes = None):
+    def __init__(self, message: bytes, shared_key: bytes | None = None):
+        # pylint: disable=too-many-statements
         """ """
         assert message is not None
 
@@ -319,7 +320,7 @@ class UNiiResponseMessage(_UNiiMessage):
         # Length
         # message_length = int.from_bytes(header[11:13])
 
-        if protocol_id == UNiiProtocolID.BASIC_ENCRYPTION:
+        if protocol_id == UNiiProtocolID.BASIC_ENCRYPTION and shared_key is not None:
             # As Initialization Vector for the encryption the first 12 bytes of the header are used.
             initial_value = header[:12]
             # The block counter is reset to 0 for every new message.
@@ -340,7 +341,7 @@ class UNiiResponseMessage(_UNiiMessage):
         data_length = int.from_bytes(payload[2:4])
 
         # Data
-        data = None
+        data: bytes | UNiiData | None = None
         if data_length > 0:
             data = payload[4 : 4 + data_length]
             # logger.debug("%s data: %i bytes, 0x%s", self.command, len(data), data.hex())

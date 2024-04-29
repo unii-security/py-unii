@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # Helper functions
 
 
-def bit_position_to_numeric(data: bytes) -> [int]:
+def bit_position_to_numeric(data: bytes) -> list[int]:
     """
     Returns which bits in an array of bytes are set, LSB first.
 
@@ -33,7 +33,7 @@ def bit_position_to_numeric(data: bytes) -> [int]:
     return numerics
 
 
-def bcd_encode(data: bytes) -> bytes:
+def bcd_encode(data: str) -> bytes:
     """ "
     Encodes numeric string values in BCD format padded with zeroes to the right.
 
@@ -135,7 +135,7 @@ class UNiiRawData(UNiiData, UNiiSendData):
         return "0x" + self.raw_data.hex()
 
 
-class UNiiResultCode(UNiiData):
+class UNiiResultCode(IntEnum):
     """
     UNii Result Code data class.
 
@@ -146,6 +146,11 @@ class UNiiResultCode(UNiiData):
 
     OK: Final = 0x0000
     ERROR: Final = 0x0001
+
+    def __init__(self, data: bytes):
+        if isinstance(data, bytes):
+            data = int.from_bytes(data)
+        super().__init__(data)
 
 
 # Equipment related
@@ -595,7 +600,7 @@ class UNiiInputStatus(dict, UNiiData):
                 self[input_status.number] = input_status
 
 
-class UNiiInputStatusUpdate(UNiiInputStatusRecord):
+class UNiiInputStatusUpdate(UNiiInputStatusRecord, UNiiData):
     # pylint: disable=too-few-public-methods
     """
     UNii Input Status Update data class.
@@ -651,10 +656,10 @@ class UNiiDeviceStatus(UNiiData):
     This data class contains the response of the "Request Device Status" command.
     """
 
-    io_devices = []
-    keyboard_devices = []
-    wiegand_devices = []
-    uwi_devices = []
+    io_devices: list[UNiiDeviceStatusRecord] = []
+    keyboard_devices: list[UNiiDeviceStatusRecord] = []
+    wiegand_devices: list[UNiiDeviceStatusRecord] = []
+    uwi_devices: list[UNiiDeviceStatusRecord] = []
 
     def __init__(self, data: bytes):
         # Version
@@ -665,7 +670,7 @@ class UNiiDeviceStatus(UNiiData):
         # Split data in chunks of 2 bytes
         chunks = [data[pos : pos + 2] for pos in range(2, len(data), 2)]
         # Convert chunks to list of Device Status Records
-        device_status_records = [
+        device_status_records: list[UNiiDeviceStatusRecord] = [
             UNiiDeviceStatusRecord.from_bytes(chunk) for chunk in chunks
         ]
 
@@ -718,16 +723,16 @@ class UNiiEventRecord(UNiiData):
     # pylint: disable=too-few-public-methods
     # pylint: disable=too-many-instance-attributes
 
-    event_description: str = None
-    user_number: int = None
-    user_name: str = None
-    input_number: int = None
-    input_name: str = None
-    device_number: int = None
-    device_name: str = None
-    bus_number: int = None
-    sections: [] = None
-    sia_code: SIACode = None
+    event_description: str | None = None
+    user_number: int | None = None
+    user_name: str | None = None
+    input_number: int | None = None
+    input_name: str | None = None
+    device_number: int | None = None
+    device_name: str | None = None
+    bus_number: int | None = None
+    sections: list[int] | None = None
+    sia_code: SIACode | None = None
 
     def __init__(self, data: bytes):
         # pylint: disable=consider-using-min-builtin

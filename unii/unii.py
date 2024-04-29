@@ -9,7 +9,7 @@ from abc import ABC
 from datetime import datetime, timedelta
 from enum import IntFlag, auto
 from threading import Lock
-from typing import Final
+from typing import Any, Final
 
 from .unii_command import UNiiCommand
 from .unii_command_data import (
@@ -21,11 +21,13 @@ from .unii_command_data import (
     UNiiDisarmSectionStatus,
     UNiiDisarmState,
     UNiiEquipmentInformation,
+    UNiiInput,
     UNiiInputArrangement,
     UNiiInputState,
     UNiiInputStatus,
     UNiiInputStatusRecord,
     UNiiRawData,
+    UNiiSection,
     UNiiSectionArrangement,
     UNiiSectionStatus,
 )
@@ -35,6 +37,7 @@ from .unii_connection import (
     UNiiConnectionError,
     UNiiTCPConnection,
 )
+from .unii_message import UNiiResponseMessage
 
 logger = logging.getLogger(__name__)
 
@@ -54,20 +57,20 @@ class UNii(ABC):
     UNii base class for interfacing with Alphatronics UNii security systems.
     """
 
-    unique_id = None
-    model = "Unknown"
-    connected = False
+    unique_id: str | None = None
+    model: str = "Unknown"
+    connected: bool = False
 
-    equipment_information: UNiiEquipmentInformation = None
-    sections = {}
-    inputs = {}
-    device_status: UNiiDeviceStatus = None
+    equipment_information: UNiiEquipmentInformation | None = None
+    sections: dict[int, UNiiSection] = {}
+    inputs: dict[int, UNiiInput] = {}
+    device_status: UNiiDeviceStatus | None = None
 
-    connection: UNiiConnection = None
+    connection: UNiiConnection
 
-    features = []
+    features: list[UNiiFeature] = []
 
-    _event_occurred_callbacks = []
+    _event_occurred_callbacks: list[Any] = []
 
     def __init__(
         self,
@@ -93,7 +96,7 @@ class UNii(ABC):
         self._event_occurred_callbacks.append(callback)
 
     def _forward_to_event_occurred_callbacks(
-        self, command: UNiiCommand, data: UNiiData
+        self, command: UNiiCommand, data: UNiiData | None
     ):
         for callback in self._event_occurred_callbacks:
             try:
@@ -117,14 +120,14 @@ class UNiiLocal(UNii):
     network.
     """
 
-    _received_message_queue = {}
-    _waiting_for_message = {}
+    _received_message_queue: dict[int, list[Any]] = {}
+    _waiting_for_message: dict[int, UNiiCommand | None] = {}
 
-    _poll_alive_task: asyncio.Task = None
+    _poll_alive_task: asyncio.Task | None = None
     _stay_connected: bool = False
 
     def __init__(
-        self, host: str, port: int = DEFAULT_PORT, shared_key: (str, bytes) = None
+        self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
     ):
         # If the shared key is provided as hex string convert it to bytes.
         if shared_key is not None and isinstance(shared_key, str):
@@ -237,7 +240,7 @@ class UNiiLocal(UNii):
         return True
 
     async def _send(
-        self, command: UNiiCommand, data: UNiiData = None, reconnect: bool = True
+        self, command: UNiiCommand, data: UNiiData | None = None, reconnect: bool = True
     ) -> int:
         if self.connection is None and reconnect:
             logger.info("Trying to reconnect")
@@ -256,10 +259,10 @@ class UNiiLocal(UNii):
     async def _send_receive(
         self,
         command: UNiiCommand,
-        data: UNiiData = None,
-        expected_response: UNiiCommand = None,
+        data: UNiiData | None = None,
+        expected_response: UNiiCommand | None = None,
         reconnect: bool = True,
-    ) -> [UNiiCommand, UNiiData]:
+    ) -> list[Any]:
         tx_sequence = await self._send(command, data, reconnect)
         if tx_sequence is not None:
             return await self._get_received_message(tx_sequence, expected_response)
@@ -354,8 +357,8 @@ class UNiiLocal(UNii):
         self._forward_to_event_occurred_callbacks(command, data)
 
     async def _get_received_message(
-        self, tx_sequence: int, expected_response: UNiiCommand = None
-    ) -> [UNiiCommand, UNiiData]:
+        self, tx_sequence: int, expected_response: UNiiCommand | None = None
+    ) -> list[Any]:
         timeout = time.time() + 5
         self._waiting_for_message[tx_sequence] = expected_response
         while self.connection.is_open and time.time() < timeout:

@@ -56,11 +56,9 @@ class UNiiConnection(ABC):
 
     _MAX_LENGTH_OF_ANSWER: Final = 1500
 
-    last_message_sent = 0
-    last_message_received = 0
+    last_message_sent: datetime = datetime.now()
+    last_message_received: datetime = datetime.now()
     _message_received_callback = None
-
-    is_open: bool = None
 
     def set_message_received_callback(self, callback):
         """
@@ -82,14 +80,22 @@ class UNiiConnection(ABC):
         """
         raise NotImplementedError
 
+    @property
+    def is_open(self) -> bool:
+        """
+        If the connection is open
+        """
+        raise NotImplementedError
+
     @abstractmethod
     async def send(
         self,
         command: UNiiCommand,
-        data: UNiiData = None,
-    ) -> bool:
+        data: UNiiData | None = None,
+    ) -> int | None:
         """
-        Write to Alphatronics UNii and returns the response.
+        Constructs a message based on given command and data, writes this to the UNii and
+        returns the TX Sequence ID or None if writing failed.
         """
         raise NotImplementedError
 
@@ -100,16 +106,18 @@ class UNiiTCPConnection(UNiiConnection):
     Connection to an Alphatronics UNii over TCP/IP.
     """
 
-    _reader: StreamReader = None
-    _writer: StreamWriter = None
-    _session_id = None
-    _tx_sequence = -1
-    _rx_sequence = 0
+    _reader: StreamReader | None = None
+    _writer: StreamWriter | None = None
+    _session_id: int | None = None
+    _tx_sequence: int = -1
+    _rx_sequence: int = 0
 
     _close_connection = True
     _receive_task = None
 
-    def __init__(self, host: str, port: int = DEFAULT_PORT, shared_key=None):
+    def __init__(
+        self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
+    ):
         assert host is not None
         assert port is not None
 
@@ -151,7 +159,7 @@ class UNiiTCPConnection(UNiiConnection):
     async def _close(self) -> bool:
         self._close_connection = True
 
-        if self.is_open:
+        if self.is_open and self._writer is not None:
             try:
                 with self._writer_lock:
                     self._writer.close()
@@ -246,12 +254,8 @@ class UNiiTCPConnection(UNiiConnection):
     async def send(
         self,
         command: UNiiCommand,
-        data: UNiiData = None,
-    ) -> int:
-        """
-        Constructs a message based on given command and data, writes this to the UNii and
-        returns the TX Sequence ID or None if writing failed.
-        """
+        data: UNiiData | None = None,
+    ) -> int | None:
         if self.is_open:
             message = UNiiRequestMessage()
             message.session_id = self._session_id
@@ -262,17 +266,18 @@ class UNiiTCPConnection(UNiiConnection):
             message.data = data
             # logger.debug("Sending: %s", message)
             # logger.debug("Sending: 0x%s", message.to_bytes(self._shared_key).hex())
-            try:
-                with self._writer_lock:
-                    self._writer.write(message.to_bytes(self._shared_key))
-                    await self._writer.drain()
-                    self.last_message_sent = datetime.now()
-                    # logger.debug("Last message sent: %s", self.last_message_sent)
+            if self._writer is not None:
+                try:
+                    with self._writer_lock:
+                        self._writer.write(message.to_bytes(self._shared_key))
+                        await self._writer.drain()
+                        self.last_message_sent = datetime.now()
+                        # logger.debug("Last message sent: %s", self.last_message_sent)
 
-                return message.tx_sequence
-            except ConnectionResetError as ex:
-                await self.close()
-                raise UNiiConnectionError(str(ex)) from ex
+                    return message.tx_sequence
+                except ConnectionResetError as ex:
+                    await self.close()
+                    raise UNiiConnectionError(str(ex)) from ex
 
         return None
 
