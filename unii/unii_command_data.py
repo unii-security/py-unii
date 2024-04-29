@@ -65,12 +65,12 @@ def bcd_encode(data: str) -> bytes:
     # return bcd_bytes
 
 
-def decode_and_strip(data: bytes):
+def decode_and_strip(data: bytes) -> str:
     """Decode a byte array to UTF-8 and strip all leading and trailing whitespace and \x00."""
     return data.decode("utf-8", "replace").strip(string.whitespace + "\x00")
 
 
-def translate_input_number(input_number: int):
+def translate_input_number(input_number: int) -> int:
     """Translate input number according to Appendix 4 of the UNii API."""
     if input_number <= 511:
         return input_number + 1
