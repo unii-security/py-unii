@@ -285,6 +285,19 @@ class UNiiSectionArmedState(IntEnum):
         return self.name.lower()
 
 
+class UNiiSectionStatusRecord(dict):
+    """
+    UNii Section Status record.
+    """
+
+    # Get dictionarry keys as attributes.
+    __getattr__ = dict.get
+
+    def __init__(self, data: bytes):
+        self["number"] = data[0]
+        self["armed_state"] = UNiiSectionArmedState(data[1])
+
+
 class UNiiSectionStatus(dict, UNiiData):
     """
     UNii Section Status data class.
@@ -296,8 +309,12 @@ class UNiiSectionStatus(dict, UNiiData):
     __getattr__ = dict.get
 
     def __init__(self, data: bytes):
-        self["number"] = data[0]
-        self["armed_state"] = UNiiSectionArmedState(data[1])
+        # Split data in chunks of 2 bytes
+        chunks = [data[pos : pos + 2] for pos in range(0, len(data), 2)]
+        # Convert chunks to Section Status Records
+        for chunk in chunks:
+            section_status_record = UNiiSectionStatusRecord(chunk)
+            self[section_status_record.number] = section_status_record
 
 
 class UNiiArmDisarmSection(UNiiData, UNiiSendData):
