@@ -245,11 +245,16 @@ class UNiiLocal(UNii):
 
     async def _disconnect(self) -> bool:
         await self._send(UNiiCommand.NORMAL_DISCONNECT, None, False)
-        self.connected = False
-        # Re-using the Normal Disconnect command to let the Event Occurred Callbacks know the UNii
-        # is disconnected.
-        self._forward_to_event_occurred_callbacks(UNiiCommand.NORMAL_DISCONNECT, None)
-        return await self.connection.close()
+        if await self.connection.close():
+            self.connected = False
+            # Re-using the Normal Disconnect command to let the Event Occurred Callbacks know the UNii
+            # is disconnected.
+            self._forward_to_event_occurred_callbacks(
+                UNiiCommand.NORMAL_DISCONNECT, None
+            )
+            return True
+
+        return False
 
     async def disconnect(self) -> bool:
         self._stay_connected = False
@@ -270,11 +275,10 @@ class UNiiLocal(UNii):
         self, command: UNiiCommand, data: UNiiData | None = None, reconnect: bool = True
     ) -> int:
         if self.connection is None and reconnect:
-            logger.info("Trying to reconnect")
+            logger.info("Trying to connect")
             await self._connect()
         elif not self.connection.is_open and reconnect:
-            logger.info("Connection lost, trying to reconnect")
-            await self._disconnect()
+            logger.info("Trying to reconnect")
             await self._connect()
         elif self.connection is None or not self.connection.is_open:
             # ToDo: Throw exception?
@@ -404,7 +408,7 @@ class UNiiLocal(UNii):
                 UNiiCommand.POLL_ALIVE_REQUEST,
                 None,
                 UNiiCommand.POLL_ALIVE_RESPONSE,
-                False,
+                True,
             )
             # logger.debug("Response received: %s", response)
             if response == UNiiCommand.POLL_ALIVE_RESPONSE:
@@ -413,7 +417,8 @@ class UNiiLocal(UNii):
         except UNiiConnectionError as ex:
             logger.error(str(ex))
 
-        logger.error("Poll Alive failed")
+        if self.connection.is_open:
+            logger.error("Poll Alive failed")
         return False
 
     async def _poll_alive_coroutine(self):
