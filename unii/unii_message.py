@@ -378,7 +378,21 @@ class UNiiResponseMessage(_UNiiMessage):
                         data = UNiiEventRecord(data)
                     case _:
                         data = UNiiRawData(data)
-            except (ValueError, LookupError) as ex:
+            except ValueError as ex:
+                data = None
+                if (
+                    self.command
+                    in [
+                        UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT,
+                        UNiiCommand.RESPONSE_REQUEST_OUTPUT_ARRANGEMENT,
+                    ]
+                    and str(ex) == "Invalid block number"
+                ):
+                    pass
+                else:
+                    logger.error(ex)
+                    logger.debug("Payload: 0x%s", payload.hex())
+            except LookupError as ex:
                 logger.error(ex)
                 logger.debug("Payload: 0x%s", payload.hex())
                 data = None
