@@ -63,21 +63,29 @@ class UNii(ABC):
     connected: bool = False
 
     equipment_information: UNiiEquipmentInformation | None = None
+    sections: dict[int, UNiiSection]
+    inputs: dict[int, UNiiInput]
+    outputs: dict[int, UNiiOutput]
     device_status: UNiiDeviceStatus | None = None
 
     connection: UNiiConnection
+
+    features: list[UNiiFeature]
+
+    _event_occurred_callbacks: list[Any]
 
     def __init__(
         self,
     ):
         super().__init__()
-        self.sections: dict[int, UNiiSection] = {}
-        self.inputs: dict[int, UNiiInput] = {}
-        self.outputs: dict[int, UNiiOutput] = {}
 
-        self.features: list[UNiiFeature] = []
+        self.sections = {}
+        self.inputs = {}
+        self.outputs = {}
 
-        self._event_occurred_callbacks: list[Any] = []
+        self.features = []
+
+        self._event_occurred_callbacks = []
 
     async def connect(self) -> bool:
         """
@@ -123,8 +131,8 @@ class UNiiLocal(UNii):
     network.
     """
 
-    _received_message_queue: dict[int, list[Any]] = {}
-    _waiting_for_message: dict[int, UNiiCommand | None] = {}
+    _received_message_queue: dict[int, list[Any]]
+    _waiting_for_message: dict[int, UNiiCommand | None]
 
     _poll_alive_task: asyncio.Task | None = None
     _stay_connected: bool = False
@@ -139,6 +147,10 @@ class UNiiLocal(UNii):
             shared_key = bytes.fromhex(shared_key)
         self.connection = UNiiTCPConnection(host, port, shared_key)
         self.unique_id = f"{host}:{port}"
+
+        self._received_message_queue = {}
+        self._waiting_for_message = {}
+
         self._received_message_queue_lock = Lock()
 
     async def _connect(self) -> bool:
@@ -249,8 +261,8 @@ class UNiiLocal(UNii):
         await self._send(UNiiCommand.NORMAL_DISCONNECT, None, False)
         if await self.connection.close():
             self.connected = False
-            # Re-using the Normal Disconnect command to let the Event Occurred Callbacks know the UNii
-            # is disconnected.
+            # Re-using the Normal Disconnect command to let the Event Occurred Callbacks know the
+            # UNii is disconnected.
             self._forward_to_event_occurred_callbacks(
                 UNiiCommand.NORMAL_DISCONNECT, None
             )

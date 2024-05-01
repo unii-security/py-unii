@@ -4,7 +4,7 @@ Data classes used by the UNii library.
 
 import logging
 import string
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import IntEnum, IntFlag, auto
 from typing import Final
@@ -93,7 +93,7 @@ def translate_input_number(input_number: int) -> int:
 # Generic command data classes
 
 
-class UNiiData:
+class UNiiData(ABC):
     # pylint: disable=too-few-public-methods
     """
     UNii Base data class.
@@ -102,7 +102,7 @@ class UNiiData:
     """
 
 
-class UNiiSendData:
+class UNiiSendData(ABC):
     # pylint: disable=too-few-public-methods
     """
     Method which should be implemented by data classes which are used to send data.
@@ -163,9 +163,6 @@ class UNiiEquipmentInformation(UNiiData):
     This data class contains the response of the "Request Equipment Information" command.
     """
 
-    software_date = None
-    device_id = None
-
     def __init__(self, data: bytes):
         # pylint: disable=consider-using-min-builtin
         # pylint: disable=too-many-locals
@@ -186,6 +183,7 @@ class UNiiEquipmentInformation(UNiiData):
             self.software_date = datetime.strptime(software_date, "%d-%m-%Y").date()
         elif version == 3:
             software_version = decode_and_strip(data[2:19])
+            self.software_date = None
 
         try:
             self.software_version = semver.Version.parse(software_version)
@@ -206,6 +204,8 @@ class UNiiEquipmentInformation(UNiiData):
         if version == 3:
             device_number_length = data[6]
             self.device_id = int.from_bytes(data[7 : 7 + device_number_length])
+        else:
+            self.device_id = None
 
     def __str__(self) -> str:
         return str(
@@ -756,10 +756,10 @@ class UNiiDeviceStatus(UNiiData):
     This data class contains the response of the "Request Device Status" command.
     """
 
-    io_devices: list[UNiiDeviceStatusRecord] = []
-    keyboard_devices: list[UNiiDeviceStatusRecord] = []
-    wiegand_devices: list[UNiiDeviceStatusRecord] = []
-    uwi_devices: list[UNiiDeviceStatusRecord] = []
+    io_devices: list[UNiiDeviceStatusRecord]
+    keyboard_devices: list[UNiiDeviceStatusRecord]
+    wiegand_devices: list[UNiiDeviceStatusRecord]
+    uwi_devices: list[UNiiDeviceStatusRecord]
 
     def __init__(self, data: bytes):
         # Version

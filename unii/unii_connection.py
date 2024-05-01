@@ -10,6 +10,7 @@ import random
 from abc import ABC, abstractmethod
 from asyncio.exceptions import CancelledError
 from asyncio.streams import StreamReader, StreamWriter
+from asyncio.tasks import Task
 from datetime import datetime
 from threading import Lock
 from typing import Final
@@ -112,8 +113,8 @@ class UNiiTCPConnection(UNiiConnection):
     _tx_sequence: int = -1
     _rx_sequence: int = 0
 
-    _close_connection = True
-    _receive_task = None
+    _close_connection: bool = True
+    _receive_task: Task | None = None
 
     def __init__(
         self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
