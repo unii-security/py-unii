@@ -63,21 +63,21 @@ class UNii(ABC):
     connected: bool = False
 
     equipment_information: UNiiEquipmentInformation | None = None
-    sections: dict[int, UNiiSection] = {}
-    inputs: dict[int, UNiiInput] = {}
-    outputs: dict[int, UNiiOutput] = {}
     device_status: UNiiDeviceStatus | None = None
 
     connection: UNiiConnection
 
-    features: list[UNiiFeature] = []
-
-    _event_occurred_callbacks: list[Any] = []
-
     def __init__(
         self,
     ):
-        pass
+        super().__init__()
+        self.sections: dict[int, UNiiSection] = {}
+        self.inputs: dict[int, UNiiInput] = {}
+        self.outputs: dict[int, UNiiOutput] = {}
+
+        self.features: list[UNiiFeature] = []
+
+        self._event_occurred_callbacks: list[Any] = []
 
     async def connect(self) -> bool:
         """
@@ -132,6 +132,8 @@ class UNiiLocal(UNii):
     def __init__(
         self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
     ):
+        super().__init__()
+
         # If the shared key is provided as hex string convert it to bytes.
         if shared_key is not None and isinstance(shared_key, str):
             shared_key = bytes.fromhex(shared_key)
@@ -161,7 +163,7 @@ class UNiiLocal(UNii):
                 or data is None
                 or response != UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION
             ):
-                self._disconnect()
+                await self._disconnect()
                 return False
 
             await self._send_receive(
@@ -314,7 +316,7 @@ class UNiiLocal(UNii):
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
-            if section.number not in self.inputs:
+            if section.number not in self.sections:
                 self.sections[section.number] = section
             else:
                 self.sections[section.number].update(section)
