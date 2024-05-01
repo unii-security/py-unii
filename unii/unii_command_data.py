@@ -702,7 +702,7 @@ class UNiiOutputArrangement(dict, UNiiData):
         block_number = int.from_bytes(data[2:4])
 
         if block_number == 0xFFFF:
-            raise ValueError()
+            raise ValueError("Invalid block number")
 
         self.block_number = block_number
 
