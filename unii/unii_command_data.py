@@ -908,7 +908,10 @@ class UNiiEventRecord(UNiiData):
         # SIA Code
         sia_code = decode_and_strip(data[5:7])
         if sia_code != "":
-            self.sia_code = SIACode(sia_code)
+            try:
+                self.sia_code = SIACode(sia_code)
+            except ValueError as ex:
+                logger.warning(ex)
 
     def __repr__(self) -> str:
         return str(
