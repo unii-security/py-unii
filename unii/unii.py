@@ -185,13 +185,14 @@ class UNiiLocal(UNii):
                 False,
             )
 
-            for _, section in self.sections.items():
-                await self._send_receive(
-                    UNiiCommand.REQUEST_SECTION_STATUS,
-                    UNiiRawData(section.number.to_bytes(1)),
-                    UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS,
-                    False,
-                )
+            await self._send_receive(
+                UNiiCommand.REQUEST_SECTION_STATUS,
+                UNiiRawData(
+                    bytes.fromhex("0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20")
+                ),
+                UNiiCommand.RESPONSE_REQUEST_SECTION_STATUS,
+                False,
+            )
 
             block = 0
             while True:
