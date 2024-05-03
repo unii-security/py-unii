@@ -205,7 +205,7 @@ class UNiiTCPConnection(UNiiConnection):
                 packet_length = int.from_bytes(response[12:14])
 
                 # Read remaining part of the message
-                if len(response) < packet_length:
+                while len(response) < packet_length:
                     response += await self._reader.read(packet_length - len(response))
 
                 message = UNiiResponseMessage(response, self._shared_key)
