@@ -207,6 +207,8 @@ class UNiiTCPConnection(UNiiConnection):
                 # Read remaining part of the message
                 while len(response) < packet_length:
                     response += await self._reader.read(packet_length - len(response))
+                    if len(response) < packet_length:
+                        logger.debug("Response not yet fully received")
 
                 message = UNiiResponseMessage(response, self._shared_key)
                 if message.command not in [
