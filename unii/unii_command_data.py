@@ -202,10 +202,14 @@ class UNiiEquipmentInformation(UNiiData):
         self.max_users = int.from_bytes(data[4:6])
 
         if version == 3:
-            device_number_length = data[6]
-            self.device_id = int.from_bytes(data[7 : 7 + device_number_length])
+            device_id_length = data[6]
+            self.device_id = decode_and_strip(data[7 : 7 + device_id_length])
+            self.serial_number = self.device_id[:9]
+            self.mac_address = self.device_id[-12:]
         else:
             self.device_id = None
+            self.serial_number = None
+            self.mac_address = None
 
     def __str__(self) -> str:
         return str(
@@ -213,6 +217,9 @@ class UNiiEquipmentInformation(UNiiData):
                 "software_version": self.software_version,
                 "software_date": str(self.software_date),
                 "device_name": self.device_name,
+                "device_id": self.device_id,
+                "serial_number": self.serial_number,
+                "mac_address": self.mac_address,
             }
         )
 
