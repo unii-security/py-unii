@@ -60,6 +60,7 @@ class UNiiConnection(ABC):
     last_message_sent: datetime = datetime.now()
     last_message_received: datetime = datetime.now()
     _message_received_callback = None
+    unique_id: str
 
     def set_message_received_callback(self, callback):
         """
@@ -126,6 +127,7 @@ class UNiiTCPConnection(UNiiConnection):
         self._port = port
         self._shared_key = shared_key
         self._writer_lock = Lock()
+        self.unique_id = host
 
     def __str__(self) -> str:
         return f"{self._host}:{self._port}"
