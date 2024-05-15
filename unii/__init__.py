@@ -2,8 +2,10 @@
 Implementation of the Alphatronics UNii library
 """
 
-__version__ = "0.0.0.1"
-
+try:
+    from ._version import __version__
+except ModuleNotFoundError:
+    pass
 from .sia_code import SIACode
 from .unii import DEFAULT_PORT, UNii, UNiiCommand, UNiiData, UNiiFeature, UNiiLocal
 from .unii_command_data import (
