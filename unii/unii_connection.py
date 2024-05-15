@@ -218,7 +218,7 @@ class UNiiTCPConnection(UNiiConnection):
         return self._receive_task is None
 
     async def _receive_coroutine(self):
-        while True and self._reader is not None:
+        while self._reader is not None:
             try:
                 response = await asyncio.wait_for(self._reader.read(14), timeout=0.1)
                 if len(response) < 13:
