@@ -135,7 +135,6 @@ class UNiiLocal(UNii):
     _waiting_for_message: dict[int, UNiiCommand | None]
 
     _poll_alive_task: asyncio.Task | None = None
-    _stay_connected: bool = False
 
     def __init__(
         self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
@@ -240,7 +239,6 @@ class UNiiLocal(UNii):
             )
 
             self.connected = True
-            self._stay_connected = True
 
             self._forward_to_event_occurred_callbacks(
                 UNiiCommand.CONNECTION_REQUEST_RESPONSE, None
@@ -275,7 +273,7 @@ class UNiiLocal(UNii):
         return False
 
     async def disconnect(self) -> bool:
-        self._stay_connected = False
+        await self._cancel_poll_alive()
 
         if self.connection is not None and self.connection.is_open:
             try:
@@ -439,20 +437,47 @@ class UNiiLocal(UNii):
             logger.error("Poll Alive failed")
         return False
 
+    async def _cancel_poll_alive(self) -> bool:
+        if self._poll_alive_task is not None and not (
+            self._poll_alive_task.done() or self._poll_alive_task.cancelled()
+        ):
+            if not self._poll_alive_task.cancel():
+                logger.error("Failed to cancel poll alive task")
+                logger.debug("Poll alive task: %s", self._poll_alive_task)
+                return False
+            try:
+                await self._poll_alive_task
+            except asyncio.CancelledError:
+                logger.debug("Poll alive task was cancelled")
+
+        if self._poll_alive_task is not None:
+            if self._poll_alive_task.done() or self._poll_alive_task.cancelled():
+                self._poll_alive_task = None
+            else:
+                logger.error("Failed to cancel poll alive task")
+                logger.debug("Poll alive task: %s", self._poll_alive_task)
+                return False
+
+        return self._poll_alive_task is None
+
     async def _poll_alive_coroutine(self):
         """
         To keep the connection alive (and NAT entries active) a poll message has to be sent every
         30 seconds if no other messages where sent during the last 30 seconds.
         """
-        while self._stay_connected:
-            if (
-                datetime.now()
-                > self.connection.last_message_sent + _POLL_ALIVE_INTERVAL
-                and not await self._poll_alive()
-            ):
-                if self.connection.is_open:
-                    await self._disconnect()
-            await asyncio.sleep(1)
+        while True:
+            try:
+                if (
+                    datetime.now()
+                    > self.connection.last_message_sent + _POLL_ALIVE_INTERVAL
+                    and not await self._poll_alive()
+                ):
+                    if self.connection.is_open:
+                        await self._disconnect()
+                await asyncio.sleep(1)
+            except asyncio.CancelledError:
+                logger.debug("Poll alive coroutine was canceled")
+                break
         # logger.debug("Poll Alive coroutine stopped")
 
     async def arm_section(self, number: int, code: str) -> bool:

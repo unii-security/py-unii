@@ -114,7 +114,6 @@ class UNiiTCPConnection(UNiiConnection):
     _tx_sequence: int = -1
     _rx_sequence: int = 0
 
-    _close_connection: bool = True
     _receive_task: Task | None = None
 
     def __init__(
@@ -141,7 +140,6 @@ class UNiiTCPConnection(UNiiConnection):
                 )
                 logger.info("Connected to %s", self)
 
-                self._close_connection = False
                 # Fixed session ID only one session
                 self._session_id = 0xFFFF
                 # Start with a random TX Sequence
@@ -160,7 +158,7 @@ class UNiiTCPConnection(UNiiConnection):
             raise UNiiConnectionError(ex) from ex
 
     async def _close(self) -> bool:
-        self._close_connection = True
+        await self._cancel_receive()
 
         if self.is_open and self._writer is not None:
             try:
@@ -196,8 +194,31 @@ class UNiiTCPConnection(UNiiConnection):
         """
         return self._writer is not None
 
+    async def _cancel_receive(self) -> bool:
+        if self._receive_task is not None and not (
+            self._receive_task.done() or self._receive_task.cancelled()
+        ):
+            if not self._receive_task.cancel():
+                logger.error("Failed to cancel receive task")
+                logger.debug("Receive task: %s", self._receive_task)
+                return False
+            try:
+                await self._receive_task
+            except asyncio.CancelledError:
+                logger.debug("Receive task was cancelled")
+
+        if self._receive_task is not None:
+            if self._receive_task.done() or self._receive_task.cancelled():
+                self._receive_task = None
+            else:
+                logger.error("Failed to cancel receive task")
+                logger.debug("Receive task: %s", self._receive_task)
+                return False
+
+        return self._receive_task is None
+
     async def _receive_coroutine(self):
-        while not self._close_connection and self._reader is not None:
+        while True and self._reader is not None:
             try:
                 response = await asyncio.wait_for(self._reader.read(14), timeout=0.1)
                 if len(response) < 13:
@@ -248,6 +269,9 @@ class UNiiTCPConnection(UNiiConnection):
             except ConnectionResetError as ex:
                 logger.debug(ex)
                 await self._close()
+                break
+            except asyncio.CancelledError:
+                logger.debug("Receive coroutine was canceled")
                 break
             except TimeoutError:
                 pass
