@@ -226,6 +226,24 @@ class UNiiEquipmentInformation(UNiiData):
             }
         )
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, UNiiEquipmentInformation):
+            # don't attempt to compare against unrelated types
+            return NotImplemented
+
+        return (
+            self.software_version == other.software_version
+            and self.software_date == other.software_date
+            and self.device_name == other.device_name
+            and self.max_inputs == other.max_inputs
+            and self.max_groups == other.max_groups
+            and self.max_sections == other.max_sections
+            and self.max_users == other.max_users
+            and self.device_id == other.device_id
+            and self.serial_number == other.serial_number
+            and self.mac_address == other.mac_address
+        )
+
 
 # Section related
 class UNiiSection(dict):

@@ -317,6 +317,14 @@ class UNiiLocal(UNii):
         return [None, None]
 
     def _handle_equipment_information(self, data: UNiiEquipmentInformation):
+        if (
+            self.equipment_information is not None
+            and self.equipment_information != data
+        ):
+            self._forward_to_event_occurred_callbacks(
+                UNiiCommand.RELOAD_CONFIGURATION, None
+            )
+
         self.equipment_information = data
 
         # Get capabilities based on firmware version number
