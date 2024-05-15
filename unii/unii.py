@@ -174,6 +174,7 @@ class UNiiLocal(UNii):
                 response is None
                 or data is None
                 or response != UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION
+                or self.equipment_information is None
             ):
                 await self._disconnect()
                 return False
@@ -290,7 +291,7 @@ class UNiiLocal(UNii):
 
     async def _send(
         self, command: UNiiCommand, data: UNiiData | None = None, reconnect: bool = True
-    ) -> int:
+    ) -> int | None:
         if self.connection is None and reconnect:
             logger.info("Trying to connect")
             await self._connect()
