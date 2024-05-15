@@ -174,7 +174,7 @@ class UNiiEquipmentInformation(UNiiData):
 
         if version == 2:
             software_version = decode_and_strip(data[2:7])
-            # The software version can be truncated, to make it a vallid SemVer add 0 if the
+            # The software version can be truncated, to make it a valid SemVer add 0 if the
             # software version ends with .
             if software_version.endswith("."):
                 software_version += "0"
@@ -333,9 +333,9 @@ class UNiiArmDisarmSection(UNiiData, UNiiSendData):
     This data class contains the request for "Request Arm Section" and "Request Disarm Section"
     """
 
-    def __init__(self, code, number):
+    def __init__(self, code: str, number: int):
         self.code = code
-        self.number: int = number
+        self.number = number
 
     def to_bytes(self):
         bytes_ = bytearray()
