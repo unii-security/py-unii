@@ -1,22 +1,33 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.24", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "unii/_version.py"
+
+[tool.hatch.version]
+source = "vcs"
 
 [project]
 name = "unii"
-version = "0.0.0.1"
+dynamic = ["version"]
 license = {text = "Apache-2.0"}
 authors = [
-    { name="Rogier van Staveren" }
+    { name="Rogier van Staveren", email="rogier@batoid.com" }
 ]
 description = "Library to interface with Alphatronics UNii security systems."
 readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS :: MacOS X",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Development Status :: 4 - Beta",
+    "Topic :: Security"
 ]
 dependencies = [
 	"pycryptodome>=3.6.6",
@@ -24,14 +35,27 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/unii-security/py-unii"
-"Bug Tracker" = "https://github.com/unii-security/py-unii/issues"
-
-[tool.black]
-target-version = ["py39", "py310"]
-exclude = 'generated'
+Homepage = "https://unii-security.com/"
+Repository = "https://github.com/unii-security/py-unii"
+Issues = "https://github.com/unii-security/py-unii/issues"
 
 [tool.isort]
 # https://github.com/PyCQA/isort/wiki/isort-Settings
 profile = "black"
+skip = "unii/_version.py"
+
+[tool.black]
+exclude = 'unii/_version.py'
+
+[tool.pylint]
+ignore = "_version.py"
+recursive = "y"
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "unii"
+
+[[tool.mypy.overrides]]
+module = ["*._version"]
+ignore_missing_imports = true
 
