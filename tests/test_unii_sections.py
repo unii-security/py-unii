@@ -80,7 +80,6 @@ class Test(unittest.TestCase):
             self.assertIsNotNone(self._unii.sections, "Sections not set")
             await self._unii.arm_section(1, self.user_code)
             result = await self._unii.disarm_section(1, self.user_code)
-            self.assertTrue(result)
             self.assertTrue(result, "Failed to disarm section")
         finally:
             await asyncio.sleep(1)
