@@ -339,9 +339,9 @@ class UNiiLocal(UNii):
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
-            if section.number not in self.sections:
+            if section.number not in self.sections and section.active:
                 self.sections[section.number] = section
-            else:
+            elif section.number in self.sections:
                 self.sections[section.number].update(section)
 
     def _handle_section_status(self, data: UNiiSectionStatus):
