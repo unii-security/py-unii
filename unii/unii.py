@@ -348,6 +348,7 @@ class UNiiLocal(UNii):
         for _, section_status in data.items():
             if section_status.number in self.sections:
                 self.sections[section_status.number].update(section_status)
+                self.sections[section_status.number]["active"] = section_status.armed_state != UNiiSectionArmedState.NOT_PROGRAMMED
             elif section_status.armed_state != UNiiSectionArmedState.NOT_PROGRAMMED:
                 # This should never happen
                 logger.warning(
