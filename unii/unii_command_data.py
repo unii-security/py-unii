@@ -50,20 +50,6 @@ def bcd_encode(data: str) -> bytes:
 
     return bytes.fromhex(data)
 
-    # This does the same but less efficient. I leave it in place for now, as reference and also to
-    # be modified if above implementation happens to be not how it's supposed to work.
-    # data = data.encode()
-    #
-    # # Split data in chunks of 2 bytes
-    # chunks = [data[pos : pos + 2] for pos in range(0, len(data), 2)]
-    #
-    # bcd_bytes = bytearray()
-    # for digits in chunks:
-    #     bcd_byte = ((digits[0] & 0x0F) << 4) + (digits[1] & 0x0F)
-    #     bcd_bytes.append(bcd_byte)
-    #
-    # return bcd_bytes
-
 
 def decode_and_strip(data: bytes) -> str:
     """Decode a byte array to UTF-8 and strip all leading and trailing whitespace and \x00."""
