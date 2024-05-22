@@ -23,7 +23,7 @@ Extra features (arming/disarming, (un)bypassing, outputs and event handling) are
 
 Tested with the UNii 32, 128 and 512. No additional UNii license needed.
 
-It is recomended to use the latest possible firmware on your UNii to unlock the full potential of
+It is recommended to use the latest possible firmware on your UNii to unlock the full potential of
 the UNii and this integration.
 
 ## Configuring the UNii
