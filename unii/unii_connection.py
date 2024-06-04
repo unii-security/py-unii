@@ -298,7 +298,7 @@ class UNiiTCPConnection(UNiiConnection):
             if self._writer is not None:
                 try:
                     with self._writer_lock:
-                        self._writer.write(self._shared_key)
+                        self._writer.write(self._shared_key.encode('utf-8'))
                         await self._writer.drain()
                         self.last_message_sent = datetime.now()
                         # logger.debug("Last message sent: %s", self.last_message_sent)
