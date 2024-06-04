@@ -221,7 +221,7 @@ class UNiiRequestMessage(_UNiiMessage):
 
         return payload
 
-    def to_bytes(self, shared_key: bytes | None = None) -> bytes:
+    def to_bytes(self, shared_key: str | None = None) -> bytes:
         """
         Converts the UNii Message to a sequence of bytes
         """
@@ -279,7 +279,7 @@ class UNiiResponseMessage(_UNiiMessage):
     UNii Message class for receiving
     """
 
-    def __init__(self, message: bytes, shared_key: bytes | None = None):
+    def __init__(self, message: bytes, shared_key: str | None = None):
         # pylint: disable=too-many-statements
         """ """
         assert message is not None
@@ -404,7 +404,7 @@ class UNiiResponseMessage(_UNiiMessage):
                 data = None
         self.data = data
 
-    def _decrypt(self, shared_key: bytes, initial_value: bytes, payload: bytes):
+    def _decrypt(self, shared_key: str, initial_value: bytes, payload: bytes):
         aes = AES.new(shared_key, AES.MODE_CTR, initial_value=initial_value, nonce=b"")
 
         return aes.decrypt(payload)
