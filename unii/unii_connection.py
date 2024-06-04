@@ -117,7 +117,7 @@ class UNiiTCPConnection(UNiiConnection):
     _receive_task: Task | None = None
 
     def __init__(
-        self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
+        self, host: str, port: int = DEFAULT_PORT, shared_key: str | None = None
     ):
         assert host is not None
         assert port is not None
@@ -298,7 +298,7 @@ class UNiiTCPConnection(UNiiConnection):
             if self._writer is not None:
                 try:
                     with self._writer_lock:
-                        self._writer.write(message.to_bytes(self._shared_key))
+                        self._writer.write(self._shared_key)
                         await self._writer.drain()
                         self.last_message_sent = datetime.now()
                         # logger.debug("Last message sent: %s", self.last_message_sent)
