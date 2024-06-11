@@ -90,6 +90,13 @@ class UNiiConnection(ABC):
         """
         raise NotImplementedError
 
+    @property
+    def is_encrypted(self) -> bool:
+        """
+        If the connection is open
+        """
+        raise NotImplementedError
+
     @abstractmethod
     async def send(
         self,
@@ -195,6 +202,13 @@ class UNiiTCPConnection(UNiiConnection):
         If the connection is open
         """
         return self._writer is not None
+
+    @property
+    def is_encrypted(self) -> bool:
+        """
+        If the connection is open
+        """
+        return self._shared_key is not None
 
     async def _cancel_receive(self) -> bool:
         if self._receive_task is not None and not (
