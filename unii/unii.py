@@ -11,6 +11,7 @@ from enum import IntFlag, auto
 from threading import Lock
 from typing import Any, Final
 
+from .task_helper import save_task_reference
 from .unii_command import UNiiCommand
 from .unii_command_data import (
     UNiiArmDisarmSection,
@@ -254,6 +255,7 @@ class UNiiLocal(UNii):
                 self._poll_alive_task = asyncio.create_task(
                     self._poll_alive_coroutine()
                 )
+                save_task_reference(self._poll_alive_task)
                 return True
         except UNiiConnectionError as ex:
             logger.error(str(ex))

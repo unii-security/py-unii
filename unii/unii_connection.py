@@ -15,6 +15,7 @@ from datetime import datetime
 from threading import Lock
 from typing import Final
 
+from .task_helper import save_task_reference
 from .unii_command import UNiiCommand
 from .unii_command_data import UNiiData
 from .unii_message import UNiiMessageError, UNiiRequestMessage, UNiiResponseMessage
@@ -147,6 +148,7 @@ class UNiiTCPConnection(UNiiConnection):
 
                 # Start the read coroutine
                 self._receive_task = asyncio.create_task(self._receive_coroutine())
+                save_task_reference(self._receive_task)
         except TimeoutError as ex:
             raise UNiiConnectionError("Open connection timeout") from ex
         except (
