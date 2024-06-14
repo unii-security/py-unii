@@ -251,6 +251,14 @@ class Test(unittest.TestCase):
         )
         _LOGGER.debug(message)
 
+    def test_response_request_section_status(self):
+        # pylint: disable=line-too-long
+        message = UNiiResponseMessage(
+            bytes.fromhex("d3f5659325030000c8320502001af6c258882c6a41117f248f8f"),
+            bytes.fromhex("31323334353637383930616263646566"),
+        )
+        _LOGGER.debug(message)
+
 
 if __name__ == "__main__":
     # import sys;sys.argv = ['', 'Test.testName']
