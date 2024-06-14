@@ -167,34 +167,29 @@ class UNiiTCPConnection(UNiiConnection):
             raise UNiiConnectionError(ex) from ex
 
     async def _close(self) -> bool:
-        await self._cancel_receive()
-
-        if self.is_open and self._writer is not None:
+        if self.is_open:
             try:
                 with self._writer_lock:
                     self._writer.close()
                     await self._writer.wait_closed()
             except ConnectionResetError as ex:
                 logger.error(ex)
-        self._writer = None
-        self._reader = None
-        # self._session_id = None
 
-        return True
+            self._writer = None
+            self._reader = None
+
+        if not self.is_open:
+            logger.debug("Connection closed")
+            return True
+
+        logger.error("Failed to close connection")
+        return False
 
     async def close(self) -> bool:
-        if self.is_open:
-            await self._close()
+        if not await self._cancel_receive():
+            return False
 
-        if self._receive_task is not None:
-            await self._receive_task
-            self._receive_task = None
-
-        if self.is_open:
-            logger.error("Failed to close connection")
-        else:
-            logger.debug("Connection closed")
-        return True
+        return await self._close()
 
     @property
     def is_open(self) -> bool:
@@ -214,24 +209,19 @@ class UNiiTCPConnection(UNiiConnection):
         if self._receive_task is not None and not (
             self._receive_task.done() or self._receive_task.cancelled()
         ):
-            if not self._receive_task.cancel():
-                logger.error("Failed to cancel receive task")
-                logger.debug("Receive task: %s", self._receive_task)
-                return False
+            self._receive_task.cancel()
             try:
                 await self._receive_task
             except asyncio.CancelledError:
-                logger.debug("Receive task was cancelled")
+                logger.debug("Receive task was cancelled!")
+                self._receive_task = None
 
         if self._receive_task is not None:
-            if self._receive_task.done() or self._receive_task.cancelled():
-                self._receive_task = None
-            else:
-                logger.error("Failed to cancel receive task")
-                logger.debug("Receive task: %s", self._receive_task)
-                return False
+            logger.error("Failed to cancel receive task")
+            logger.debug("Receive task: %s", self._receive_task)
+            return False
 
-        return self._receive_task is None
+        return True
 
     async def _receive_coroutine(self):
         while self._reader is not None:
@@ -294,7 +284,9 @@ class UNiiTCPConnection(UNiiConnection):
             except IndexError as ex:
                 logger.error(ex)
             await asyncio.sleep(0.1)
-        # logger.debug("Receive coroutine stopped")
+
+        self._receive_task = None
+        logger.debug("Receive coroutine stopped")
 
     async def send(
         self,
