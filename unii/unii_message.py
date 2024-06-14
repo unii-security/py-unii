@@ -250,7 +250,7 @@ class UNiiRequestMessage(_UNiiMessage):
             # logger.debug("Initial value: 0x%s", initial_value.hex())
 
             aes = AES.new(
-                shared_key.encode(), AES.MODE_CTR, initial_value=initial_value, nonce=b""
+                shared_key, AES.MODE_CTR, initial_value=initial_value, nonce=b""
             )
             payload = aes.encrypt(payload)
             # logger.debug("Encrypted Payload: 0x%s", payload.hex())
@@ -405,6 +405,6 @@ class UNiiResponseMessage(_UNiiMessage):
         self.data = data
 
     def _decrypt(self, shared_key: str, initial_value: bytes, payload: bytes):
-        aes = AES.new(shared_key.encode(), AES.MODE_CTR, initial_value=initial_value, nonce=b"")
+        aes = AES.new(shared_key, AES.MODE_CTR, initial_value=initial_value, nonce=b"")
 
         return aes.decrypt(payload)
