@@ -125,7 +125,7 @@ class UNiiTCPConnection(UNiiConnection):
     _receive_task: Task | None = None
 
     def __init__(
-        self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
+        self, host: str, port: int = DEFAULT_PORT, shared_key: str | None = None
     ):
         assert host is not None
         assert port is not None
