@@ -7,7 +7,15 @@ try:
 except ModuleNotFoundError:
     pass
 from .sia_code import SIACode
-from .unii import DEFAULT_PORT, UNii, UNiiCommand, UNiiData, UNiiFeature, UNiiLocal
+from .unii import (
+    DEFAULT_PORT,
+    UNii,
+    UNiiCommand,
+    UNiiData,
+    UNiiEncryptionError,
+    UNiiFeature,
+    UNiiLocal,
+)
 from .unii_command_data import (
     UNiiInputState,
     UNiiInputStatusRecord,
