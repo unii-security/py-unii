@@ -13,6 +13,7 @@ class UNiiCommand(IntEnum):
 
     # Virtual commands used within the library
     RELOAD_CONFIGURATION: Final = 0x010001
+    REAUTHENTICATE: Final = 0x010002
 
     # Connection setup
     CONNECTION_REQUEST: Final = 0x0001
