@@ -47,6 +47,10 @@ logger = logging.getLogger(__name__)
 _POLL_ALIVE_INTERVAL: Final = timedelta(seconds=30)
 
 
+class UNiiEncryptionError(Exception):
+    """"""
+
+
 class UNiiFeature(IntFlag):
     """Features implemented by the UNii library."""
 
@@ -89,9 +93,21 @@ class UNii(ABC):
 
         self._event_occurred_callbacks = []
 
+    async def test_connection(self) -> bool:
+        """
+        Connect to Alphatronics UNii
+
+        Throws UNiiConnectionError when no connection can be established.
+        Returns False when no connection can be established
+        """
+        raise NotImplementedError
+
     async def connect(self) -> bool:
         """
         Connect to Alphatronics UNii
+
+        Throws UNiiEncryptionError when no encrypted message can be send.
+        Returns False when no connection can be established
         """
         raise NotImplementedError
 
@@ -154,6 +170,24 @@ class UNiiLocal(UNii):
 
         self._received_message_queue_lock = Lock()
 
+    async def test_connection(self) -> bool:
+        await self.connection.connect()
+
+        self.connection.set_message_received_callback(self._message_received_callback)
+        response, _ = await self._send_receive(
+            UNiiCommand.CONNECTION_REQUEST,
+            None,
+            UNiiCommand.CONNECTION_REQUEST_RESPONSE,
+            False,
+        )
+
+        await self.disconnect()
+
+        if response is None and self.connection.is_encrypted:
+            raise UNiiEncryptionError()
+
+        return response == UNiiCommand.CONNECTION_REQUEST_RESPONSE
+
     async def _connect(self) -> bool:
         await self.connection.connect()
 
@@ -164,6 +198,11 @@ class UNiiLocal(UNii):
             UNiiCommand.CONNECTION_REQUEST_RESPONSE,
             False,
         )
+
+        if response is None and self.connection.is_encrypted:
+            await self.disconnect()
+            raise UNiiEncryptionError()
+
         if response == UNiiCommand.CONNECTION_REQUEST_RESPONSE:
             response, data = await self._send_receive(
                 UNiiCommand.REQUEST_EQUIPMENT_INFORMATION,
@@ -263,7 +302,11 @@ class UNiiLocal(UNii):
         return False
 
     async def _disconnect(self) -> bool:
-        await self._send(UNiiCommand.NORMAL_DISCONNECT, None, False)
+        try:
+            await self._send(UNiiCommand.NORMAL_DISCONNECT, None, False)
+        except UNiiEncryptionError:
+            pass
+
         if await self.connection.close():
             self.connected = False
             # Re-using the Normal Disconnect command to let the Event Occurred Callbacks know the
@@ -287,24 +330,28 @@ class UNiiLocal(UNii):
                 return False
 
         if self._poll_alive_task is not None:
-            await self._poll_alive_task
+            await self._cancel_poll_alive()
         return True
 
     async def _send(
         self, command: UNiiCommand, data: UNiiData | None = None, reconnect: bool = True
     ) -> int | None:
-        if self.connection is None and reconnect:
-            logger.info("Trying to connect")
-            await self._connect()
-        elif not self.connection.is_open and reconnect:
-            logger.info("Trying to reconnect")
-            await self._connect()
-        elif self.connection is None or not self.connection.is_open:
-            # ToDo: Throw exception?
-            return None
+        try:
+            if self.connection is None and reconnect:
+                logger.info("Trying to connect")
+                await self._connect()
+            elif not self.connection.is_open and reconnect:
+                logger.info("Trying to reconnect")
+                await self._connect()
+            elif self.connection is None or not self.connection.is_open:
+                # ToDo: Throw exception?
+                return None
 
-        # logger.debug("Sending command %s", command)
-        return await self.connection.send(command, data)
+            # logger.debug("Sending command %s", command)
+            return await self.connection.send(command, data)
+        except UNiiEncryptionError:
+            self._forward_to_event_occurred_callbacks(UNiiCommand.REAUTHENTICATE, None)
+            raise
 
     async def _send_receive(
         self,
@@ -392,7 +439,12 @@ class UNiiLocal(UNii):
             case UNiiCommand.EVENT_OCCURRED:
                 self._forward_to_event_occurred_callbacks(command, data)
                 if self.connected:
-                    await self._send(UNiiCommand.RESPONSE_EVENT_OCCURRED, None, False)
+                    try:
+                        await self._send(
+                            UNiiCommand.RESPONSE_EVENT_OCCURRED, None, False
+                        )
+                    except UNiiEncryptionError:
+                        pass
             case UNiiCommand.INPUT_STATUS_CHANGED:
                 self._handle_input_status_changed(data)
             case UNiiCommand.INPUT_STATUS_UPDATE:
@@ -455,24 +507,19 @@ class UNiiLocal(UNii):
         if self._poll_alive_task is not None and not (
             self._poll_alive_task.done() or self._poll_alive_task.cancelled()
         ):
-            if not self._poll_alive_task.cancel():
-                logger.error("Failed to cancel poll alive task")
-                logger.debug("Poll alive task: %s", self._poll_alive_task)
-                return False
+            self._poll_alive_task.cancel()
             try:
                 await self._poll_alive_task
             except asyncio.CancelledError:
                 logger.debug("Poll alive task was cancelled")
+                self._poll_alive_task = None
 
         if self._poll_alive_task is not None:
-            if self._poll_alive_task.done() or self._poll_alive_task.cancelled():
-                self._poll_alive_task = None
-            else:
-                logger.error("Failed to cancel poll alive task")
-                logger.debug("Poll alive task: %s", self._poll_alive_task)
-                return False
+            logger.error("Failed to cancel poll alive task")
+            logger.debug("Poll alive task: %s", self._poll_alive_task)
+            return False
 
-        return self._poll_alive_task is None
+        return True
 
     async def _poll_alive_coroutine(self):
         """
@@ -482,17 +529,21 @@ class UNiiLocal(UNii):
         while True:
             try:
                 if (
-                    datetime.now()
+                    not self.connection.is_open
+                    or datetime.now()
                     > self.connection.last_message_sent + _POLL_ALIVE_INTERVAL
-                    and not await self._poll_alive()
-                ):
+                ) and not await self._poll_alive():
                     if self.connection.is_open:
                         await self._disconnect()
                 await asyncio.sleep(1)
             except asyncio.CancelledError:
                 logger.debug("Poll alive coroutine was canceled")
                 break
-        # logger.debug("Poll Alive coroutine stopped")
+            except UNiiEncryptionError:
+                break
+
+        self._poll_alive_task = None
+        logger.debug("Poll Alive coroutine stopped")
 
     async def arm_section(self, number: int, code: str) -> bool:
         """Arm a section."""
