@@ -54,6 +54,20 @@ class Test(unittest.TestCase):
             await unii.disconnect()
 
     @async_test
+    async def test_connect_unavailable_host(self):
+        """
+        Test connecting to Alphatronics UNii.
+        """
+        await asyncio.sleep(1)
+        unii = UNiiLocal("127.0.0.1", self._port)
+        try:
+            result = await unii.connect()
+            self.assertFalse(result, "Failed to connect to UNii")
+        finally:
+            await asyncio.sleep(1)
+            await unii.disconnect()
+
+    @async_test
     async def test_disconnect(self):
         """
         Test disconnectiong from Alphatronics UNii.

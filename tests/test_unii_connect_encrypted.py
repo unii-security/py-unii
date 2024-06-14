@@ -9,7 +9,7 @@ import json
 import logging
 import unittest
 
-from unii import UNiiLocal
+from unii import UNiiEncryptionError, UNiiLocal
 
 from . import async_test
 
@@ -57,6 +57,30 @@ class Test(unittest.TestCase):
         finally:
             await asyncio.sleep(1)
             await unii.disconnect()
+
+    @async_test
+    async def test_connect_unavailable_host(self):
+        """
+        Test connecting to Alphatronics UNii.
+        """
+        await asyncio.sleep(1)
+        unii = UNiiLocal("127.0.0.1", self._port, self._shared_key)
+        try:
+            result = await unii.connect()
+            self.assertFalse(result, "Failed to connect to UNii")
+        finally:
+            await asyncio.sleep(1)
+            await unii.disconnect()
+
+    @async_test
+    async def test_connect_invalid_shared_key(self):
+        """
+        Test connecting to Alphatronics UNii.
+        """
+        await asyncio.sleep(1)
+        unii = UNiiLocal(self._host, self._port, b"invalidsharedkey")
+        with self.assertRaises(UNiiEncryptionError):
+            await unii.connect()
 
     @async_test
     async def test_disconnect(self):
