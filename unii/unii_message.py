@@ -73,6 +73,14 @@ class UNiiIncompleteMessageError(UNiiMessageError):
         )
 
 
+class UNiiInvallidMessageError(UNiiMessageError):
+    """
+    UNii Invallid Message Error.
+
+    When a message can not be parsed this error is thrown.
+    """
+
+
 class UNiiProtocolID(IntEnum):
     """
     UNii Protocol IDs
@@ -392,16 +400,19 @@ class UNiiResponseMessage(_UNiiMessage):
                 else:
                     logger.error(ex)
                     logger.debug("Payload: 0x%s", payload.hex())
+                    raise UNiiInvallidMessageError() from ex
             except LookupError as ex:
                 logger.error(ex)
                 logger.debug("Payload: 0x%s", payload.hex())
                 data = None
+                raise UNiiInvallidMessageError() from ex
             # Catch all exceptions while in development, to be removed once stable.
             # pylint: disable=broad-exception-caught
             except Exception as ex:
                 logger.error(ex)
                 logger.debug("Payload: 0x%s", payload.hex())
                 data = None
+                raise UNiiInvallidMessageError() from ex
         self.data = data
 
     def _decrypt(self, shared_key: bytes, initial_value: bytes, payload: bytes):
