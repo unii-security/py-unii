@@ -291,6 +291,8 @@ class UNiiSectionArmedState(IntEnum):
     ARMED: Final = 1
     DISARMED: Final = 2
     ALARM: Final = 7
+    EXIT_TIMER: Final = 8
+    ENTRY_TIMER: Final = 9
 
     def __repr__(self) -> str:
         return self.name
