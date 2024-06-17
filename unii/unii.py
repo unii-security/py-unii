@@ -171,6 +171,8 @@ class UNiiLocal(UNii):
         self._received_message_queue_lock = Lock()
 
     async def test_connection(self) -> bool:
+        success = False
+
         await self.connection.connect()
 
         self.connection.set_message_received_callback(self._message_received_callback)
@@ -181,12 +183,29 @@ class UNiiLocal(UNii):
             False,
         )
 
-        await self.disconnect()
-
         if response is None and self.connection.is_encrypted:
+            await self.disconnect()
             raise UNiiEncryptionError()
 
-        return response == UNiiCommand.CONNECTION_REQUEST_RESPONSE
+        if response == UNiiCommand.CONNECTION_REQUEST_RESPONSE:
+            response, data = await self._send_receive(
+                UNiiCommand.REQUEST_EQUIPMENT_INFORMATION,
+                None,
+                UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION,
+                False,
+            )
+            if (
+                response is None
+                or data is None
+                or response != UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION
+                or self.equipment_information is None
+            ):
+                logger.error("Failed to retrieve equipment information.")
+            else:
+                success = True
+
+        await self.disconnect()
+        return success
 
     async def _connect(self) -> bool:
         await self.connection.connect()
@@ -216,6 +235,7 @@ class UNiiLocal(UNii):
                 or response != UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION
                 or self.equipment_information is None
             ):
+                logger.error("Failed to retrieve equipment information.")
                 await self._disconnect()
                 return False
 
