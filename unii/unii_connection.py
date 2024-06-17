@@ -213,7 +213,7 @@ class UNiiTCPConnection(UNiiConnection):
             try:
                 await self._receive_task
             except asyncio.CancelledError:
-                logger.debug("Receive task was cancelled!")
+                logger.debug("Receive task was cancelled")
                 self._receive_task = None
 
         if self._receive_task is not None:
