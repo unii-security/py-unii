@@ -9,23 +9,7 @@ from typing import Final
 from Crypto.Cipher import AES
 
 from .unii_command import UNiiCommand
-from .unii_command_data import (
-    UNiiArmSectionStatus,
-    UNiiData,
-    UNiiDeviceStatus,
-    UNiiDisarmSectionStatus,
-    UNiiEquipmentInformation,
-    UNiiEventRecord,
-    UNiiInputArrangement,
-    UNiiInputStatus,
-    UNiiInputStatusUpdate,
-    UNiiOutputArrangement,
-    UNiiRawData,
-    UNiiReadyToArmSectionStatus,
-    UNiiResultCode,
-    UNiiSectionArrangement,
-    UNiiSectionStatus,
-)
+from .unii_command_data import *
 
 logger = logging.getLogger(__name__)
 
@@ -375,6 +359,10 @@ class UNiiResponseMessage(_UNiiMessage):
                         data = UNiiInputStatus(data)
                     case UNiiCommand.INPUT_STATUS_UPDATE:
                         data = UNiiInputStatusUpdate(data)
+                    case UNiiCommand.RESPONSE_REQUEST_TO_BYPASS_AN_INPUT:
+                        data = UNiiBypassZoneInputResult(data)
+                    case UNiiCommand.RESPONSE_REQUEST_TO_UNBYPASS_AN_INPUT:
+                        data = UNiiUnbypassZoneInputResult(data)
                     # Output related
                     case UNiiCommand.RESPONSE_REQUEST_OUTPUT_ARRANGEMENT:
                         data = UNiiOutputArrangement(data)
@@ -401,7 +389,7 @@ class UNiiResponseMessage(_UNiiMessage):
                     logger.error(ex)
                     logger.debug("Payload: 0x%s", payload.hex())
                     raise UNiiInvallidMessageError() from ex
-            except LookupError as ex:
+            except (LookupError, TypeError) as ex:
                 logger.error(ex)
                 logger.debug("Payload: 0x%s", payload.hex())
                 data = None

@@ -663,6 +663,57 @@ class UNiiInputStatusUpdate(UNiiInputStatusRecord, UNiiData):
         self["number"] = int.from_bytes(data[2:4])
 
 
+class UNiiBypassMode(IntEnum):
+    USER_CODE = 0x00
+    USER_NUMBER = 0x01
+
+
+class UNiiBypassUnbypassZoneInput(UNiiData, UNiiSendData):
+    # pylint: disable=too-few-public-methods
+    """
+    This data class contains the request for "Request to Bypass a Zone/Input" and "Request to
+    Unbypass a Zone/Input".
+    """
+
+    def __init__(self, mode: UNiiBypassMode, code: str, number: int):
+        self.mode = mode
+        self.code = code[:8].ljust(8, "0")
+        self.number = number
+
+    def to_bytes(self):
+        bytes_ = bytearray()
+        bytes_.append(self.mode)
+        bytes_.extend(bcd_encode(self.code))
+        bytes_.extend(self.number.to_bytes(2))
+        return bytes(bytes_)
+
+
+class UNiiBypassZoneInputResult(UNiiData):
+    SUCCESSFUL = 1
+    AUTHENTICATION_FAILED = 2
+    NOT_ALLOWED = 3
+
+    def __init__(self, data: bytes):
+        self.number = int.from_bytes(data[:2])
+        self.result = data[2]
+
+    def __repr__(self) -> str:
+        return str({"number": self.number, "result": self.result})
+
+
+class UNiiUnbypassZoneInputResult(UNiiData):
+    SUCCESSFUL = 1
+    AUTHENTICATION_FAILED = 2
+    NOT_BYPASSED = 3
+
+    def __init__(self, data: bytes):
+        self.number = int.from_bytes(data[:2])
+        self.result = data[2]
+
+    def __repr__(self) -> str:
+        return str({"number": self.number, "result": self.result})
+
+
 # Output related
 
 

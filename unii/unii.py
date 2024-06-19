@@ -13,27 +13,7 @@ from typing import Any, Final
 
 from .task_helper import save_task_reference
 from .unii_command import UNiiCommand
-from .unii_command_data import (
-    UNiiArmDisarmSection,
-    UNiiArmSectionStatus,
-    UNiiArmState,
-    UNiiData,
-    UNiiDeviceStatus,
-    UNiiDisarmSectionStatus,
-    UNiiDisarmState,
-    UNiiEquipmentInformation,
-    UNiiInput,
-    UNiiInputArrangement,
-    UNiiInputState,
-    UNiiInputStatus,
-    UNiiInputStatusRecord,
-    UNiiOutput,
-    UNiiRawData,
-    UNiiSection,
-    UNiiSectionArmedState,
-    UNiiSectionArrangement,
-    UNiiSectionStatus,
-)
+from .unii_command_data import *
 from .unii_connection import (
     DEFAULT_PORT,
     UNiiConnection,
@@ -55,6 +35,7 @@ class UNiiFeature(IntFlag):
     """Features implemented by the UNii library."""
 
     ARM_SECTION: Final = auto()
+    BYPASS_INPUT: Final = auto()
     BYPASS_ZONE: Final = auto()
     SET_OUTPUT: Final = auto()
 
@@ -132,6 +113,14 @@ class UNii(ABC):
             # pylint: disable=broad-exception-caught
             except Exception as ex:
                 logger.error("Exception in Event Occurred Callback: %s", ex)
+
+    async def bypass_input(self, number: int, usercode: str) -> bool:
+        """Bypass an input."""
+        raise NotImplementedError
+
+    async def inbypass_input(self, number: int, usercode: str) -> bool:
+        """Unypass an input."""
+        raise NotImplementedError
 
     async def arm_section(self, number: int, code: str) -> bool:
         """Arm a section."""
@@ -397,14 +386,14 @@ class UNiiLocal(UNii):
         self.equipment_information = data
 
         # Get capabilities based on firmware version number
-        # Library is currently read-only, so disabled for now
-        # software_version = (
-        #     self.equipment_information.software_version.finalize_version()
-        # )
-        # if software_version.match(">=2.17.0"):
-        #     self.features.append(UNiiFeature.ARM_SECTION)
-        #     self.features.append(UNiiFeature.BYPASS_ZONE)
-        #     self.features.append(UNiiFeature.SET_OUTPUT)
+        software_version = (
+            self.equipment_information.software_version.finalize_version()
+        )
+        if software_version.match(">=2.17.0"):
+            # self.features.append(UNiiFeature.ARM_SECTION)
+            self.features.append(UNiiFeature.BYPASS_INPUT)
+            # self.features.append(UNiiFeature.BYPASS_ZONE)
+            # self.features.append(UNiiFeature.SET_OUTPUT)
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
@@ -564,6 +553,36 @@ class UNiiLocal(UNii):
 
         self._poll_alive_task = None
         logger.debug("Poll Alive coroutine stopped")
+
+    async def bypass_input(self, number: int, usercode: str) -> bool:
+        response, data = await self._send_receive(
+            UNiiCommand.REQUEST_TO_BYPASS_AN_INPUT,
+            UNiiBypassUnbypassZoneInput(UNiiBypassMode.USER_CODE, usercode, number),
+            UNiiCommand.RESPONSE_REQUEST_TO_BYPASS_AN_INPUT,
+        )
+        if (
+            response == UNiiCommand.RESPONSE_REQUEST_TO_BYPASS_AN_INPUT
+            and data.result == UNiiBypassZoneInputResult.SUCCESSFUL
+        ):
+            return True
+
+        logger.error("Failed to bypass input %i, reason: %s", number, data.result)
+        return False
+
+    async def unbypass_input(self, number: int, usercode: str) -> bool:
+        response, data = await self._send_receive(
+            UNiiCommand.REQUEST_TO_UNBYPASS_AN_INPUT,
+            UNiiBypassUnbypassZoneInput(UNiiBypassMode.USER_CODE, usercode, number),
+            UNiiCommand.RESPONSE_REQUEST_TO_UNBYPASS_AN_INPUT,
+        )
+        if (
+            response == UNiiCommand.RESPONSE_REQUEST_TO_UNBYPASS_AN_INPUT
+            and data.result == UNiiUnbypassZoneInputResult.SUCCESSFUL
+        ):
+            return True
+
+        logger.error("Failed to unbypass input %i, reason: %s", number, data.result)
+        return False
 
     async def arm_section(self, number: int, code: str) -> bool:
         """Arm a section."""
