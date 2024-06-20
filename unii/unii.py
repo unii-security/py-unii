@@ -390,15 +390,21 @@ class UNiiLocal(UNii):
 
         self.equipment_information = data
 
+        # Set the supported features of the equipment
+        self.features = []
+
+        # Feature that applies to all versions of the firmware
+        self.features.append(UNiiFeature.BYPASS_INPUT)
+
         # Get capabilities based on firmware version number
-        software_version = (
-            self.equipment_information.software_version.finalize_version()
-        )
-        if software_version.match(">=2.17.0"):
-            # self.features.append(UNiiFeature.ARM_SECTION)
-            self.features.append(UNiiFeature.BYPASS_INPUT)
-            # self.features.append(UNiiFeature.BYPASS_ZONE)
-            # self.features.append(UNiiFeature.SET_OUTPUT)
+        # Library doesn't distinct between versions yet, so disabled for now
+        # software_version = (
+        #     self.equipment_information.software_version.finalize_version()
+        # )
+        # if software_version.match(">=2.17.0"):
+        #     self.features.append(UNiiFeature.ARM_SECTION)
+        #     self.features.append(UNiiFeature.BYPASS_ZONE)
+        #     self.features.append(UNiiFeature.SET_OUTPUT)
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
