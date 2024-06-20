@@ -119,11 +119,11 @@ class UNii(ABC):
             except Exception as ex:
                 logger.error("Exception in Event Occurred Callback: %s", ex)
 
-    async def bypass_input(self, number: int, usercode: str) -> bool:
+    async def bypass_input(self, number: int, user_code: str) -> bool:
         """Bypass an input."""
         raise NotImplementedError
 
-    async def unbypass_input(self, number: int, usercode: str) -> bool:
+    async def unbypass_input(self, number: int, user_code: str) -> bool:
         """Unypass an input."""
         raise NotImplementedError
 
@@ -559,14 +559,15 @@ class UNiiLocal(UNii):
         self._poll_alive_task = None
         logger.debug("Poll Alive coroutine stopped")
 
-    async def bypass_input(self, number: int, usercode: str) -> bool:
+    async def bypass_input(self, number: int, user_code: str) -> bool:
         response, data = await self._send_receive(
             UNiiCommand.REQUEST_TO_BYPASS_AN_INPUT,
-            UNiiBypassUnbypassZoneInput(UNiiBypassMode.USER_CODE, usercode, number),
+            UNiiBypassUnbypassZoneInput(UNiiBypassMode.USER_CODE, user_code, number),
             UNiiCommand.RESPONSE_REQUEST_TO_BYPASS_AN_INPUT,
         )
         if (
             response == UNiiCommand.RESPONSE_REQUEST_TO_BYPASS_AN_INPUT
+            and data.number == number
             and data.result == UNiiBypassZoneInputResult.SUCCESSFUL
         ):
             return True
@@ -574,14 +575,15 @@ class UNiiLocal(UNii):
         logger.error("Failed to bypass input %i, reason: %s", number, data.result)
         return False
 
-    async def unbypass_input(self, number: int, usercode: str) -> bool:
+    async def unbypass_input(self, number: int, user_code: str) -> bool:
         response, data = await self._send_receive(
             UNiiCommand.REQUEST_TO_UNBYPASS_AN_INPUT,
-            UNiiBypassUnbypassZoneInput(UNiiBypassMode.USER_CODE, usercode, number),
+            UNiiBypassUnbypassZoneInput(UNiiBypassMode.USER_CODE, user_code, number),
             UNiiCommand.RESPONSE_REQUEST_TO_UNBYPASS_AN_INPUT,
         )
         if (
             response == UNiiCommand.RESPONSE_REQUEST_TO_UNBYPASS_AN_INPUT
+            and data.number == number
             and data.result == UNiiUnbypassZoneInputResult.SUCCESSFUL
         ):
             return True
