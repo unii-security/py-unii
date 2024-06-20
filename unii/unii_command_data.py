@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 Data classes used by the UNii library.
 """
@@ -664,6 +665,10 @@ class UNiiInputStatusUpdate(UNiiInputStatusRecord, UNiiData):
 
 
 class UNiiBypassMode(IntEnum):
+    """
+    The different modes to (un)bypass a Zone or Input
+    """
+
     USER_CODE = 0x00
     USER_NUMBER = 0x01
 
@@ -689,6 +694,10 @@ class UNiiBypassUnbypassZoneInput(UNiiData, UNiiSendData):
 
 
 class UNiiBypassZoneInputResult(UNiiData):
+    # pylint: disable=too-few-public-methods
+    """
+    Result of bypassing a zone or input.
+    """
     SUCCESSFUL = 1
     AUTHENTICATION_FAILED = 2
     NOT_ALLOWED = 3
@@ -702,6 +711,10 @@ class UNiiBypassZoneInputResult(UNiiData):
 
 
 class UNiiUnbypassZoneInputResult(UNiiData):
+    # pylint: disable=too-few-public-methods
+    """
+    Result of unbypassing a zone or input.
+    """
     SUCCESSFUL = 1
     AUTHENTICATION_FAILED = 2
     NOT_BYPASSED = 3

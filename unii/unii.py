@@ -1,3 +1,5 @@
+# pylint: disable=wildcard-import
+# pylint: disable=unused-wildcard-import
 """
 Classes for interfacing with Alphatronics UNii security systems.
 """
@@ -20,7 +22,6 @@ from .unii_connection import (
     UNiiConnectionError,
     UNiiTCPConnection,
 )
-from .unii_message import UNiiResponseMessage
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,11 @@ _POLL_ALIVE_INTERVAL: Final = timedelta(seconds=30)
 
 
 class UNiiEncryptionError(Exception):
-    """"""
+    """
+    UNii Encryption Error.
+
+    When sending an encrypted message fails.
+    """
 
 
 class UNiiFeature(IntFlag):
@@ -118,7 +123,7 @@ class UNii(ABC):
         """Bypass an input."""
         raise NotImplementedError
 
-    async def inbypass_input(self, number: int, usercode: str) -> bool:
+    async def unbypass_input(self, number: int, usercode: str) -> bool:
         """Unypass an input."""
         raise NotImplementedError
 
