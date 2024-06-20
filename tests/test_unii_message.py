@@ -1,4 +1,5 @@
 # pylint: disable=R0801
+# pylint: disable=missing-function-docstring
 """
 Test creating UNii messages.
 """
