@@ -127,11 +127,11 @@ class UNii(ABC):
         """Unypass an input."""
         raise NotImplementedError
 
-    async def arm_section(self, number: int, code: str) -> bool:
+    async def arm_section(self, number: int, user_code: str) -> bool:
         """Arm a section."""
         raise NotImplementedError
 
-    async def disarm_section(self, number: int, code: str) -> bool:
+    async def disarm_section(self, number: int, user_code: str) -> bool:
         """Disarm a section."""
         raise NotImplementedError
 
@@ -395,6 +395,7 @@ class UNiiLocal(UNii):
 
         # Feature that applies to all versions of the firmware
         self.features.append(UNiiFeature.BYPASS_INPUT)
+        self.features.append(UNiiFeature.ARM_SECTION)
 
         # Get capabilities based on firmware version number
         # Library doesn't distinct between versions yet, so disabled for now
@@ -402,7 +403,6 @@ class UNiiLocal(UNii):
         #     self.equipment_information.software_version.finalize_version()
         # )
         # if software_version.match(">=2.17.0"):
-        #     self.features.append(UNiiFeature.ARM_SECTION)
         #     self.features.append(UNiiFeature.BYPASS_ZONE)
         #     self.features.append(UNiiFeature.SET_OUTPUT)
 
@@ -597,33 +597,43 @@ class UNiiLocal(UNii):
         logger.error("Failed to unbypass input %i, reason: %s", number, data.result)
         return False
 
-    async def arm_section(self, number: int, code: str) -> bool:
+    async def arm_section(self, number: int, user_code: str) -> bool:
         """Arm a section."""
         response, data = await self._send_receive(
             UNiiCommand.REQUEST_ARM_SECTION,
-            UNiiArmDisarmSection(code, number),
+            UNiiArmDisarmSection(user_code, number),
             UNiiCommand.RESPONSE_ARM_SECTION,
         )
-        if response == UNiiCommand.RESPONSE_ARM_SECTION and data.arm_state in [
-            UNiiArmState.SECTION_ARMED,
-            UNiiArmState.NO_CHANGE,
-        ]:
+        if (
+            response == UNiiCommand.RESPONSE_ARM_SECTION
+            and data.number == number
+            and data.arm_state
+            in [
+                UNiiArmState.SECTION_ARMED,
+                UNiiArmState.NO_CHANGE,
+            ]
+        ):
             return True
 
         logger.error("Arming failed: %s", data.arm_state)
         return False
 
-    async def disarm_section(self, number: int, code: str) -> bool:
+    async def disarm_section(self, number: int, user_code: str) -> bool:
         """Disarm a section."""
         response, data = await self._send_receive(
             UNiiCommand.REQUEST_DISARM_SECTION,
-            UNiiArmDisarmSection(code, number),
+            UNiiArmDisarmSection(user_code, number),
             UNiiCommand.RESPONSE_DISARM_SECTION,
         )
-        if response == UNiiCommand.RESPONSE_DISARM_SECTION and data.disarm_state in [
-            UNiiDisarmState.SECTION_DISARMED,
-            UNiiDisarmState.NO_CHANGE,
-        ]:
+        if (
+            response == UNiiCommand.RESPONSE_DISARM_SECTION
+            and data.number == number
+            and data.disarm_state
+            in [
+                UNiiDisarmState.SECTION_DISARMED,
+                UNiiDisarmState.NO_CHANGE,
+            ]
+        ):
             return True
 
         if data is not None:
