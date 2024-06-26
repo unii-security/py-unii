@@ -48,22 +48,32 @@ class Test(unittest.IsolatedAsyncioTestCase):
             if unii_input.status != UNiiInputState.DISABLED:
                 _LOGGER.info(unii_input)
 
-    async def test_bypass_input(self):
-        await self._unii.unbypass_input(1, self.user_code)
-        result = await self._unii.bypass_input(1, self.user_code)
+    async def test_bypass_wired_input(self):
+        await self._unii.unbypass_input(2, self.user_code)
+        result = await self._unii.bypass_input(2, self.user_code)
         self.assertTrue(result, "Failed to bypass input")
 
-    async def test_bypass_input_fail(self):
-        await self._unii.unbypass_input(1, self.user_code)
-        result = await self._unii.bypass_input(1, "")
+    async def test_bypass_wired_input_fail(self):
+        await self._unii.unbypass_input(2, self.user_code)
+        result = await self._unii.bypass_input(2, "")
         self.assertFalse(result)
 
-    async def test_unbypass_input(self):
-        await self._unii.bypass_input(1, self.user_code)
-        result = await self._unii.unbypass_input(1, self.user_code)
+    async def test_unbypass_wired_input(self):
+        await self._unii.bypass_input(2, self.user_code)
+        result = await self._unii.unbypass_input(2, self.user_code)
         self.assertTrue(result, "Failed to bypass input")
 
-    async def test_unbypass_input_fail(self):
-        await self._unii.bypass_input(1, self.user_code)
-        result = await self._unii.unbypass_input(1, "")
+    async def test_unbypass_wired_input_fail(self):
+        await self._unii.bypass_input(2, self.user_code)
+        result = await self._unii.unbypass_input(2, "")
+        self.assertFalse(result)
+
+    async def test_bypass_keypad_input(self):
+        await self._unii.unbypass_input(701, self.user_code)
+        result = await self._unii.bypass_input(701, self.user_code)
+        self.assertTrue(result, "Failed to bypass input")
+
+    async def test_bypass_keypad_input_fail(self):
+        await self._unii.unbypass_input(701, self.user_code)
+        result = await self._unii.bypass_input(701, "")
         self.assertFalse(result)
