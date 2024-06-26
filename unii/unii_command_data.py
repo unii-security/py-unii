@@ -57,22 +57,38 @@ def decode_and_strip(data: bytes) -> str:
     return data.decode("utf-8", "replace").strip(string.whitespace + "\x00")
 
 
-def translate_input_number(input_number: int) -> int:
-    """Translate input number according to Appendix 4 of the UNii API."""
-    if input_number <= 511:
-        return input_number + 1
-    if 512 <= input_number <= 543:
-        return input_number + 189
-    # if 544 <= input_number <= 575:
+def input_index_to_number(input_index: int) -> int:
+    """Translate input index to input number according to Appendix 4 of the UNii API."""
+    if input_index <= 511:
+        return input_index + 1
+    if 512 <= input_index <= 543:
+        return input_index + 189
+    # if 544 <= input_index <= 575:
     #     return -1
-    if 576 <= input_number <= 639:
-        return input_number + 25
-    if 640 <= input_number <= 688:
-        return input_number + 161
-    # if 689 <= input_number <= 705:
+    if 576 <= input_index <= 639:
+        return input_index + 25
+    if 640 <= input_index <= 688:
+        return input_index + 161
+    # if 689 <= input_index <= 705:
     #     return -1
-    if 706 <= input_number <= 962:
-        return input_number + 295
+    if 706 <= input_index <= 962:
+        return input_index + 295
+
+    return -1
+
+
+def input_number_to_index(input_number: int) -> int:
+    """Translate input number to input index according to Appendix 4 of the UNii API."""
+    if 1 <= input_number <= 512:
+        return input_number - 1
+    if 701 <= input_number <= 732:
+        return input_number - 189
+    if 601 <= input_number <= 664:
+        return input_number - 25
+    if 801 <= input_number <= 848:
+        return input_number - 161
+    if 1001 <= input_number <= 1128:
+        return input_number - 295
 
     return -1
 
@@ -639,7 +655,7 @@ class UNiiInputStatus(dict, UNiiData):
 
         for index, input_status in enumerate(data[2:]):
             input_status = UNiiInputStatusRecord(input_status)
-            input_status["number"] = translate_input_number(index)
+            input_status["number"] = input_index_to_number(index)
 
             if input_status.number >= 0:
                 self[input_status.number] = input_status
@@ -698,6 +714,7 @@ class UNiiBypassZoneInputResult(UNiiData):
     """
     Result of bypassing a zone or input.
     """
+    NOT_PROGRAMMED = 0
     SUCCESSFUL = 1
     AUTHENTICATION_FAILED = 2
     NOT_ALLOWED = 3
@@ -715,6 +732,7 @@ class UNiiUnbypassZoneInputResult(UNiiData):
     """
     Result of unbypassing a zone or input.
     """
+    NOT_PROGRAMMED = 0
     SUCCESSFUL = 1
     AUTHENTICATION_FAILED = 2
     NOT_BYPASSED = 3
