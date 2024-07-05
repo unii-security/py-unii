@@ -57,6 +57,6 @@ if __name__ == "__main__":
 
     try:
         loop = asyncio.new_event_loop()
-        sys.exit(loop.run_until_complete(main(unii)))
+        sys.exit(asyncio.run(main(unii)))
     finally:
         loop.close()
