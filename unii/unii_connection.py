@@ -8,11 +8,7 @@ import asyncio
 import logging
 import random
 from abc import ABC, abstractmethod
-from asyncio.exceptions import CancelledError
-from asyncio.streams import StreamReader, StreamWriter
-from asyncio.tasks import Task
 from datetime import datetime
-from threading import Lock
 from typing import Final
 
 from .task_helper import save_task_reference
@@ -116,13 +112,13 @@ class UNiiTCPConnection(UNiiConnection):
     Connection to an Alphatronics UNii over TCP/IP.
     """
 
-    _reader: StreamReader | None = None
-    _writer: StreamWriter | None = None
+    _reader: asyncio.StreamReader | None = None
+    _writer: asyncio.StreamWriter | None = None
     _session_id: int | None = None
     _tx_sequence: int = -1
     _rx_sequence: int = 0
 
-    _receive_task: Task | None = None
+    _receive_task: asyncio.Task | None = None
 
     def __init__(
         self, host: str, port: int = DEFAULT_PORT, shared_key: bytes | None = None
@@ -133,7 +129,7 @@ class UNiiTCPConnection(UNiiConnection):
         self._host = host
         self._port = port
         self._shared_key = shared_key
-        self._writer_lock = Lock()
+        self._writer_lock = asyncio.Lock()
         self.unique_id = host
 
     def __str__(self) -> str:
@@ -162,14 +158,14 @@ class UNiiTCPConnection(UNiiConnection):
             OSError,
             ConnectionRefusedError,
             ConnectionResetError,
-            CancelledError,
+            asyncio.CancelledError,
         ) as ex:
             raise UNiiConnectionError(ex) from ex
 
     async def _close(self) -> bool:
         if self.is_open:
             try:
-                with self._writer_lock:
+                async with self._writer_lock:
                     self._writer.close()
                     await self._writer.wait_closed()
             except ConnectionResetError as ex:
@@ -305,7 +301,7 @@ class UNiiTCPConnection(UNiiConnection):
             # logger.debug("Sending: 0x%s", message.to_bytes(self._shared_key).hex())
             if self._writer is not None:
                 try:
-                    with self._writer_lock:
+                    async with self._writer_lock:
                         self._writer.write(message.to_bytes(self._shared_key))
                         await self._writer.drain()
                         self.last_message_sent = datetime.now()

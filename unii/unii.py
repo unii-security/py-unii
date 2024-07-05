@@ -10,7 +10,6 @@ import time
 from abc import ABC
 from datetime import datetime, timedelta
 from enum import IntFlag, auto
-from threading import Lock
 from typing import Any, Final
 
 from .task_helper import save_task_reference
@@ -116,8 +115,8 @@ class UNii(ABC):
             try:
                 callback(command, data)
             # pylint: disable=broad-exception-caught
-            except Exception as ex:
-                logger.error("Exception in Event Occurred Callback: %s", ex)
+            except Exception:
+                logger.exception("Exception in Event Occurred Callback: %s", callback)
 
     async def bypass_input(self, number: int, user_code: str) -> bool:
         """Bypass an input."""
@@ -162,7 +161,7 @@ class UNiiLocal(UNii):
         self._received_message_queue = {}
         self._waiting_for_message = {}
 
-        self._received_message_queue_lock = Lock()
+        self._received_message_queue_lock = asyncio.Lock()
 
     async def test_connection(self) -> bool:
         success = False
@@ -483,7 +482,7 @@ class UNiiLocal(UNii):
         if tx_sequence in self._waiting_for_message and self._waiting_for_message[
             tx_sequence
         ] in [None, command]:
-            with self._received_message_queue_lock:
+            async with self._received_message_queue_lock:
                 self._received_message_queue[tx_sequence] = [command, data]
 
         self._forward_to_event_occurred_callbacks(command, data)
@@ -494,7 +493,7 @@ class UNiiLocal(UNii):
         timeout = time.time() + 5
         self._waiting_for_message[tx_sequence] = expected_response
         while self.connection.is_open and time.time() < timeout:
-            with self._received_message_queue_lock:
+            async with self._received_message_queue_lock:
                 if tx_sequence in self._received_message_queue:
                     return self._received_message_queue.pop(tx_sequence)
             # logger.debug("Waiting for message %i to be received", tx_sequence)
