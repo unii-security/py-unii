@@ -150,10 +150,14 @@ class UNiiResultCode(IntEnum):
     OK: Final = 0x0000
     ERROR: Final = 0x0001
 
-    def __init__(self, data: bytes):
-        if isinstance(data, bytes):
-            data = int.from_bytes(data)
-        super().__init__(data)
+    def __new__(cls, value):
+        if isinstance(value, bytes):
+            value = int.from_bytes(value)
+
+        obj = int.__new__(cls)
+        obj._value_ = value
+
+        return obj
 
 
 # Equipment related
