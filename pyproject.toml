@@ -30,8 +30,8 @@ classifiers = [
     "Topic :: Security"
 ]
 dependencies = [
-	"pycryptodome>=3.6.6",
-	"semver>=3.0.2"
+	"pycryptodome>=3.23.0",
+	"semver>=3.0.4"
 ]
 
 [project.urls]
