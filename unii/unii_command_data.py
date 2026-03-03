@@ -818,7 +818,7 @@ class UNiiOutputArrangement(dict, UNiiData):
             offset += 8 + name_length
 
     def __str__(self) -> str:
-        return str({"block_number": self.block_number, "outputs": super().__str__()})
+        return str({"block_number": self.block_number, "inputs": super().__str__()})
 
 
 # Device related

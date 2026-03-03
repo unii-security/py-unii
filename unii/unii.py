@@ -395,16 +395,15 @@ class UNiiLocal(UNii):
         # Feature that applies to all versions of the firmware
         self.features.append(UNiiFeature.BYPASS_INPUT)
         self.features.append(UNiiFeature.ARM_SECTION)
-        self.features.append(UNiiFeature.SET_OUTPUT)
 
         # Get capabilities based on firmware version number
         # Library doesn't distinct between versions yet, so disabled for now
-        software_version = (
-            self.equipment_information.software_version.finalize_version()
-        )
-        if software_version.match(">=2.17.0"):
-            # self.features.append(UNiiFeature.BYPASS_ZONE)
-            self.features.append(UNiiFeature.SET_OUTPUT)
+        # software_version = (
+        #     self.equipment_information.software_version.finalize_version()
+        # )
+        # if software_version.match(">=2.17.0"):
+        #     self.features.append(UNiiFeature.BYPASS_ZONE)
+        #     self.features.append(UNiiFeature.SET_OUTPUT)
 
     def _handle_section_arrangement(self, data: UNiiSectionArrangement):
         for _, section in data.items():
@@ -452,18 +451,6 @@ class UNiiLocal(UNii):
                 unii_input.status = self.inputs[unii_input.number].status
                 self.inputs[unii_input.number].update(unii_input)
 
-    def _handle_output_arrangement(self, data: UNiiOutputArrangement):
-        if data is None:
-            return
-        for _, output in data.items():
-            logger.debug(output)
-            if output.number not in self.outputs:
-                self.outputs[output.number] = output
-            else:
-                # Retain the output status before updating the output with new data.
-                output.status = self.outputs[output.number].status
-                self.outputs[output.number].update(output)
-
     async def _message_received_callback(
         self, tx_sequence: int, command: UNiiCommand, data: UNiiData
     ):
@@ -489,8 +476,6 @@ class UNiiLocal(UNii):
                 self._handle_section_status(data)
             case UNiiCommand.RESPONSE_REQUEST_INPUT_ARRANGEMENT:
                 self._handle_input_arrangement(data)
-            case UNiiCommand.RESPONSE_REQUEST_OUTPUT_ARRANGEMENT:
-                self._handle_output_arrangement(data)
             case UNiiCommand.RESPONSE_REQUEST_EQUIPMENT_INFORMATION:
                 self._handle_equipment_information(data)
 
