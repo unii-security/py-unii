@@ -19,9 +19,9 @@ from .unii import (
 from .unii_command_data import (
     UNiiInputState,
     UNiiInputStatusRecord,
+    UNiiOutputType,
     UNiiSection,
     UNiiSectionArmedState,
     UNiiSectionStatusRecord,
     UNiiSensorType,
-    UNiiOutputType,
 )
