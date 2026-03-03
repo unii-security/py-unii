@@ -9,14 +9,12 @@ import unittest
 
 from unii import UNiiLocal
 
-from . import async_test
-
 _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Test(unittest.TestCase):
+class Test(unittest.IsolatedAsyncioTestCase):
     """
     Test Device Status.
     """
@@ -32,7 +30,6 @@ class Test(unittest.TestCase):
 
             self._unii = UNiiLocal(host, port, shared_key)
 
-    @async_test
     async def test_device_status(self):
         """
         Test connecting to Alphatronics UNii.

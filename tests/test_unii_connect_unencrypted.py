@@ -11,14 +11,12 @@ import unittest
 
 from unii import UNiiLocal
 
-from . import async_test
-
 _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Test(unittest.TestCase):
+class Test(unittest.IsolatedAsyncioTestCase):
     """
     Unit test for unencrypted connecting to Alphatronics UNii.
     """
@@ -39,7 +37,6 @@ class Test(unittest.TestCase):
         unii = UNiiLocal(self._host, self._port)
         self.assertIsNotNone(unii)
 
-    @async_test
     async def test_connect(self):
         """
         Test connecting to Alphatronics UNii.
@@ -53,7 +50,6 @@ class Test(unittest.TestCase):
             await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_connect_unavailable_host(self):
         """
         Test connecting to Alphatronics UNii.
@@ -67,7 +63,6 @@ class Test(unittest.TestCase):
             await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_disconnect(self):
         """
         Test disconnectiong from Alphatronics UNii.
@@ -79,7 +74,6 @@ class Test(unittest.TestCase):
         result = await unii.disconnect()
         self.assertTrue(result, "Failed to disconnect from UNii")
 
-    @async_test
     async def test_poll_alive(self):
         """
         Test Poll Alive request.
@@ -95,7 +89,6 @@ class Test(unittest.TestCase):
             await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_poll_alive_timeout(self):
         """
         Test Poll Alive timeout.
@@ -115,7 +108,6 @@ class Test(unittest.TestCase):
         finally:
             await unii.disconnect()
 
-    @async_test
     async def test_poll_alive_3x(self):
         """
         Test connecting to Alphatronics UNii
@@ -136,7 +128,6 @@ class Test(unittest.TestCase):
             await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_poll_alive_10x(self):
         """
         Test connecting to Alphatronics UNii

@@ -9,14 +9,12 @@ import unittest
 
 from unii import DEFAULT_PORT, UNiiLocal
 
-from . import async_test
-
 _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Test(unittest.TestCase):
+class Test(unittest.IsolatedAsyncioTestCase):
     """
     Unit test for encrypted connecting to Alphatronics UNii.
     """
@@ -33,7 +31,6 @@ class Test(unittest.TestCase):
             self._host = settings.get("host")
             self._port = settings.get("encrypted_port", self._port)
 
-    @async_test
     async def test_connect_byte_array(self):
         """
         Test connecting to Alphatronics UNii.
@@ -49,7 +46,6 @@ class Test(unittest.TestCase):
             # await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_connect_string_encode(self):
         """
         Test connecting to Alphatronics UNii.
@@ -65,7 +61,6 @@ class Test(unittest.TestCase):
             # await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_connect_hex_string(self):
         """
         Test connecting to Alphatronics UNii.
@@ -81,7 +76,6 @@ class Test(unittest.TestCase):
             # await asyncio.sleep(1)
             await unii.disconnect()
 
-    @async_test
     async def test_connect_bytes_fromhex(self):
         """
         Test connecting to Alphatronics UNii.

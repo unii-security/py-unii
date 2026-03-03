@@ -11,14 +11,12 @@ import unittest
 
 from unii import UNiiLocal
 
-from . import async_test
-
 _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Test(unittest.TestCase):
+class Test(unittest.IsolatedAsyncioTestCase):
     """
     Unit test for automatic reconnect to Alphatronics UNii.
     """
@@ -37,7 +35,6 @@ class Test(unittest.TestCase):
             self._port = settings.get("encrypted_port", self._port)
             self._shared_key = settings.get("shared_key")
 
-    @async_test
     async def test_poll_alive_timeout(self):
         """
         Test Poll Alive timeout.

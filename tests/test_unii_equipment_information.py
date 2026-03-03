@@ -9,8 +9,6 @@ import unittest
 
 from unii import UNiiLocal
 
-from . import async_test
-
 _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,7 +20,7 @@ MAX_SECTIONS = 4
 MAX_USERS = 50
 
 
-class Test(unittest.TestCase):
+class Test(unittest.IsolatedAsyncioTestCase):
     """
     Test Equipment Information.
     """
@@ -38,7 +36,6 @@ class Test(unittest.TestCase):
 
             self._unii = UNiiLocal(host, port, shared_key)
 
-    @async_test
     async def test_equipment_information(self):
         """
         Test connecting to Alphatronics UNii.

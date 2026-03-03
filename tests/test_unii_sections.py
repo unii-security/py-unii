@@ -9,14 +9,12 @@ import unittest
 
 from unii import UNiiLocal
 
-from . import async_test
-
 _SETTINGS_JSON = "settings.json"
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Test(unittest.TestCase):
+class Test(unittest.IsolatedAsyncioTestCase):
     """
     Test Input Status.
     """
@@ -34,7 +32,6 @@ class Test(unittest.TestCase):
 
             self._unii = UNiiLocal(host, port, shared_key)
 
-    @async_test
     async def test_sections(self):
         """
         Test connecting to Alphatronics UNii.
@@ -50,7 +47,6 @@ class Test(unittest.TestCase):
             await asyncio.sleep(1)
             await self._unii.disconnect()
 
-    @async_test
     async def test_arm_section(self):
         """
         Tests the arming of a section.
@@ -68,7 +64,6 @@ class Test(unittest.TestCase):
             await asyncio.sleep(1)
             await self._unii.disconnect()
 
-    @async_test
     async def test_disarm_section(self):
         """
         Tests the disarming of a section.
