@@ -2,6 +2,7 @@
 """
 Test Equipment Information.
 """
+
 import asyncio
 import json
 import logging

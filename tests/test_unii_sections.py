@@ -2,6 +2,7 @@
 """
 Test Input Status.
 """
+
 import asyncio
 import json
 import logging

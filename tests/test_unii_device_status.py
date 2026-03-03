@@ -2,6 +2,7 @@
 """
 Test Device Status.
 """
+
 import asyncio
 import json
 import logging
