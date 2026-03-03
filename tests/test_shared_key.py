@@ -19,8 +19,8 @@ class Test(unittest.IsolatedAsyncioTestCase):
     Unit test for encrypted connecting to Alphatronics UNii.
     """
 
-    _host = None
-    _port: int = DEFAULT_PORT
+    _host: str
+    _port: int
 
     def setUp(self):
         # logging.basicConfig(
@@ -29,7 +29,7 @@ class Test(unittest.IsolatedAsyncioTestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             self._host = settings.get("host")
-            self._port = settings.get("encrypted_port", self._port)
+            self._port = settings.get("encrypted_port", DEFAULT_PORT)
 
     async def test_connect_byte_array(self):
         """

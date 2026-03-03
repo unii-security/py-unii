@@ -9,7 +9,7 @@ import json
 import logging
 import unittest
 
-from unii import UNiiLocal
+from unii import DEFAULT_PORT, UNiiLocal
 
 _SETTINGS_JSON = "settings.json"
 
@@ -21,9 +21,9 @@ class Test(unittest.IsolatedAsyncioTestCase):
     Unit test for automatic reconnect to Alphatronics UNii.
     """
 
-    _host = None
-    _port: int = 6502
-    _shared_key = None
+    _host: str
+    _port: int
+    _shared_key: str
 
     def setUp(self):
         # logging.basicConfig(
@@ -32,7 +32,7 @@ class Test(unittest.IsolatedAsyncioTestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             self._host = settings.get("host")
-            self._port = settings.get("encrypted_port", self._port)
+            self._port = settings.get("encrypted_port", DEFAULT_PORT)
             self._shared_key = settings.get("shared_key")
 
     async def test_poll_alive_timeout(self):

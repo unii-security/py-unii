@@ -9,7 +9,7 @@ import json
 import logging
 import unittest
 
-from unii import UNiiEncryptionError, UNiiLocal
+from unii import DEFAULT_PORT, UNiiEncryptionError, UNiiLocal
 
 _SETTINGS_JSON = "settings.json"
 
@@ -21,9 +21,9 @@ class Test(unittest.IsolatedAsyncioTestCase):
     Unit test for encrypted connecting to Alphatronics UNii.
     """
 
-    _host = None
-    _port: int = 6502
-    _shared_key = None
+    _host: str
+    _port: int
+    _shared_key: str
 
     def setUp(self):
         # logging.basicConfig(
@@ -32,7 +32,7 @@ class Test(unittest.IsolatedAsyncioTestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             self._host = settings.get("host")
-            self._port = settings.get("encrypted_port", self._port)
+            self._port = settings.get("encrypted_port", DEFAULT_PORT)
             self._shared_key = bytes.fromhex(settings.get("shared_key"))
 
     def test_create_unii_object(self):

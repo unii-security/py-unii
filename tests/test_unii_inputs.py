@@ -8,7 +8,7 @@ import json
 import logging
 import unittest
 
-from unii import UNiiInputState, UNiiLocal
+from unii import DEFAULT_PORT, UNiiInputState, UNiiLocal
 
 _SETTINGS_JSON = "settings.json"
 
@@ -26,8 +26,8 @@ class Test(unittest.IsolatedAsyncioTestCase):
         with open(_SETTINGS_JSON, encoding="utf8") as settings_file:
             settings = json.load(settings_file)
             host = settings.get("host")
-            port = settings.get("encrypted_port", 6502)
-            shared_key = settings.get("shared_key", 6502)
+            port = settings.get("encrypted_port", DEFAULT_PORT)
+            shared_key = settings.get("shared_key")
             self.user_code = settings.get("user_code", "123456")
 
             self._unii = UNiiLocal(host, port, shared_key)
